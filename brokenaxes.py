@@ -121,12 +121,12 @@ class BrokenAxes:
         self.standardize_ticks()
         self.set_spines()
 
-    def set_xlabel(self, *args, labelpad=20, **kwargs):
-        self.big_ax.set_xlabel(*args, labelpad=labelpad, **kwargs)
+    def set_xlabel(self, label, labelpad=20, *args, **kwargs):
+        self.big_ax.set_xlabel(label, labelpad=labelpad, *args, **kwargs)
 
-    def set_ylabel(self, *args, labelpad=30, **kwargs):
+    def set_ylabel(self, label, labelpad=30, *args, **kwargs):
         self.big_ax.xaxis.labelpad = labelpad
-        self.big_ax.set_ylabel(*args, labelpad=labelpad, **kwargs)
+        self.big_ax.set_ylabel(label, labelpad=labelpad, *args, **kwargs)
 
     def set_title(self, *args, **kwargs):
         self.big_ax.set_title(*args, **kwargs)
