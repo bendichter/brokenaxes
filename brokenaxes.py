@@ -2,13 +2,17 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import matplotlib.ticker as ticker
 
+import numpy as np
 
 class BrokenAxes:
-    def __init__(self, xlims=None, ylims=None, d=.015, tilt=None,
-    subplot_spec=None, fig=None, *args, **kwargs):
+    def __init__(self, xlims=None, ylims=None, d=.015, tilt=45,
+                 subplot_spec=None, fig=None, despine=True, *args, **kwargs):
 
+        self.despine = despine
         if fig is None:
-            fig = plt.figure()
+            self.fig = plt.gcf()
+        else:
+            self.fig = fig
 
         if xlims:
             width_ratios = [i[1] - i[0] for i in xlims]
@@ -22,13 +26,15 @@ class BrokenAxes:
 
         ncols, nrows = len(width_ratios), len(height_ratios)
 
-        kwargs.update(ncols=ncols, nrows=nrows, height_ratios=height_ratios, width_ratios=width_ratios)
+        kwargs.update(ncols=ncols, nrows=nrows, height_ratios=height_ratios,
+                      width_ratios=width_ratios)
         if subplot_spec:
-            gs = gridspec.GridSpecFromSubplotSpec(subplot_spec=subplot_spec, *args, **kwargs)
-            self.big_ax = plt.Subplot(fig, subplot_spec)
+            gs = gridspec.GridSpecFromSubplotSpec(subplot_spec=subplot_spec,
+                                                  *args, **kwargs)
+            self.big_ax = plt.Subplot(self.fig, subplot_spec)
         else:
             gs = gridspec.GridSpec(*args, **kwargs)
-            self.big_ax = plt.Subplot(fig, gridspec.GridSpec(1,1)[0])
+            self.big_ax = plt.Subplot(self.fig, gridspec.GridSpec(1,1)[0])
 
         [sp.set_visible(False) for sp in self.big_ax.spines.values()]
         self.big_ax.set_xticks([])
@@ -37,80 +43,81 @@ class BrokenAxes:
 
         self.axs = []
         for igs in gs:
-            ax = plt.Subplot(fig, igs)
-            fig.add_subplot(ax)
+            ax = plt.Subplot(self.fig, igs)
+            self.fig.add_subplot(ax)
             self.axs.append(ax)
-        fig.add_subplot(self.big_ax)
+        self.fig.add_subplot(self.big_ax)
 
         bounds = self.big_ax.get_position().bounds
-        if tilt is None:
-            tilt = bounds[2] / bounds[3]
 
         for i, ax in enumerate(self.axs):
             if ylims is not None:
                 ax.set_ylim(ylims[::-1][i//ncols])
             if xlims is not None:
                 ax.set_xlim(xlims[i % ncols])
-
         self.standardize_ticks()
         if d:
-            self.draw_diags(d, tilt, fig)
-        self.set_spines()
+            self.draw_diags(d, tilt)
+        if despine:
+            self.set_spines()
 
-
-    def draw_diags(self, d, tilt, fig):
-        d_kwargs = dict(transform=fig.transFigure, color='k', clip_on=False)
+    def draw_diags(self, d, tilt):
+        size = self.fig.get_size_inches()
+        ylen = d * np.sin(tilt * np.pi / 180) * size[0] / size[1]
+        xlen = d * np.cos(tilt * np.pi / 180)
+        d_kwargs = dict(transform=self.fig.transFigure, color='k', clip_on=False)
         for ax in self.axs:
+            bounds = ax.get_position().bounds
             if ax.is_last_row():
+                ypos = bounds[1]
                 if not ax.is_last_col():
-                    xpos = ax.get_position().bounds[0] + ax.get_position().bounds[2]
-                    ypos = ax.get_position().bounds[1]
-                    ax.plot((xpos - d, xpos + d), (ypos - tilt * d,  ypos + tilt * d), **d_kwargs)
-
+                    xpos = bounds[0] + bounds[2]
+                    ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen),
+                             **d_kwargs)
                 if not ax.is_first_col():
-                    xpos = ax.get_position().bounds[0]
-                    ypos = ax.get_position().bounds[1]
-                    ax.plot((xpos - d, xpos + d), (ypos - tilt * d, ypos + tilt * d), **d_kwargs)
+                    xpos = bounds[0]
+                    ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen),
+                             **d_kwargs)
 
             if ax.is_first_col():
+                xpos = bounds[0]
                 if not ax.is_first_row():
-                    xpos = ax.get_position().bounds[0]
-                    ypos = ax.get_position().bounds[1] + ax.get_position().bounds[3]
-                    ax.plot((xpos - d, xpos + d), (ypos - tilt * d, ypos + tilt * d), **d_kwargs)
-
+                    ypos = bounds[1] + bounds[3]
+                    ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen),
+                             **d_kwargs)
                 if not ax.is_last_row():
-                    xpos = ax.get_position().bounds[0]
-                    ypos = ax.get_position().bounds[1]
-                    ax.plot((xpos - d, xpos + d), (ypos - tilt * d, ypos + tilt * d), **d_kwargs)
-
+                    ypos = bounds[1]
+                    ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen),
+                             **d_kwargs)
 
     def set_spines(self):
         for ax in self.axs:
-            ax.spines['top'].set_visible(False)
             ax.xaxis.tick_bottom()
-            ax.spines['right'].set_visible(False)
             ax.yaxis.tick_left()
             if not ax.is_last_row():
                 ax.spines['bottom'].set_visible(False)
                 ax.set_xticks([])
+            if self.despine or not ax.is_first_row():
+                ax.spines['top'].set_visible(False)
             if not ax.is_first_col():
                 ax.spines['left'].set_visible(False)
                 ax.set_yticks([])
+            if self.despine or not ax.is_last_col():
+                ax.spines['right'].set_visible(False)
 
+    def standardize_ticks(self, xbase=None, ybase=None):
+        if xbase is None:
+            xbase = max(ax.xaxis.get_ticklocs()[1] - ax.xaxis.get_ticklocs()[0]
+                        for ax in self.axs if ax.is_last_row())
+        if ybase is None:
+            ybase = max(ax.yaxis.get_ticklocs()[1] - ax.yaxis.get_ticklocs()[0]
+                        for ax in self.axs if ax.is_first_col())
 
-    def standardize_ticks(self):
-        xbases, ybases = [], []
         for ax in self.axs:
             if ax.is_first_col():
-                ybases.append(ax.yaxis.get_ticklocs()[1] - ax.yaxis.get_ticklocs()[0])
+                ax.yaxis.set_major_locator(ticker.MultipleLocator(ybase))
             if ax.is_last_row():
-                xbases.append(ax.xaxis.get_ticklocs()[1] - ax.xaxis.get_ticklocs()[0])
-
-        for ax in self.axs:
-            if ax.is_first_col():
-                ax.yaxis.set_major_locator(ticker.MultipleLocator(max(ybases)))
-            if ax.is_last_row():
-                ax.xaxis.set_major_locator(ticker.MultipleLocator(max(xbases)))
+                ax.xaxis.set_major_locator(ticker.MultipleLocator(xbase))
 
     def plot(self, *args, **kwargs):
         for ax in self.axs:
@@ -121,12 +128,12 @@ class BrokenAxes:
         self.standardize_ticks()
         self.set_spines()
 
-    def set_xlabel(self, label, labelpad=20, *args, **kwargs):
-        self.big_ax.set_xlabel(label, labelpad=labelpad, *args, **kwargs)
+    def set_xlabel(self, label, labelpad=20, **kwargs):
+        self.big_ax.set_xlabel(label, labelpad=labelpad, **kwargs)
 
-    def set_ylabel(self, label, labelpad=30, *args, **kwargs):
+    def set_ylabel(self, label, labelpad=30, **kwargs):
         self.big_ax.xaxis.labelpad = labelpad
-        self.big_ax.set_ylabel(label, labelpad=labelpad, *args, **kwargs)
+        self.big_ax.set_ylabel(label, labelpad=labelpad, **kwargs)
 
     def set_title(self, *args, **kwargs):
         self.big_ax.set_title(*args, **kwargs)
