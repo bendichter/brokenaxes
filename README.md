@@ -4,6 +4,8 @@
 
 brokenaxes makes matplotlib plots with breaks in the axes for showing data across a discontinuous range.
 
+[![PyPI](https://img.shields.io/pypi/v/brokenaxes.svg?style=plastic)](https://pypi.python.org/pypi/brokenaxes)
+
 ## Installation
 ```
 pip install brokenaxes
