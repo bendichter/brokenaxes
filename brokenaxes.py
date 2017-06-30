@@ -36,9 +36,9 @@ class BrokenAxes:
 
         Notes
         -----
-        The broken axes effect is acheived by creating a number of smaller axes and
-        setting their position and data ranges. A "big_ax" is used for methods
-        that need the position of the entire broken axes object, e.g.
+        The broken axes effect is achieved by creating a number of smaller axes
+        and setting their position and data ranges. A "big_ax" is used for
+        methods that need the position of the entire broken axes object, e.g.
         `set_xlabel`.
         """
 
@@ -93,6 +93,11 @@ class BrokenAxes:
         if despine:
             self.set_spines()
 
+    @staticmethod
+    def draw_diag(ax, xpos, xlen, ypos, ylen, **kwargs):
+        ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen),
+                **kwargs)
+
     def draw_diags(self, d, tilt):
         """
         Parameters
@@ -105,58 +110,46 @@ class BrokenAxes:
         size = self.fig.get_size_inches()
         ylen = d * np.sin(tilt * np.pi / 180) * size[0] / size[1]
         xlen = d * np.cos(tilt * np.pi / 180)
-        d_kwargs = dict(transform=self.fig.transFigure, color='k', clip_on=False,
-                        lw=rcParams['axes.linewidth'])
+        d_kwargs = dict(transform=self.fig.transFigure, color='k',
+                        clip_on=False, lw=rcParams['axes.linewidth'])
         for ax in self.axs:
             bounds = ax.get_position().bounds
+
             if ax.is_last_row():
                 ypos = bounds[1]
                 if not ax.is_last_col():
                     xpos = bounds[0] + bounds[2]
-                    ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen,
-                                                         ypos + ylen),
-                            **d_kwargs)
+                    self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
                 if not ax.is_first_col():
                     xpos = bounds[0]
-                    ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen,
-                                                         ypos + ylen),
-                            **d_kwargs)
+                    self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
 
             if ax.is_first_row():
                 ypos = bounds[1] + bounds[3]
                 if not ax.is_last_col():
                     xpos = bounds[0] + bounds[2]
-                    ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen),
-                            **d_kwargs)
+                    self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
                 if not ax.is_first_col():
                     xpos = bounds[0]
-                    ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen),
-                            **d_kwargs)
+                    self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
 
             if ax.is_first_col():
                 xpos = bounds[0]
                 if not ax.is_first_row():
                     ypos = bounds[1] + bounds[3]
-                    ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen,
-                                                         ypos + ylen),
-                            **d_kwargs)
+                    self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
                 if not ax.is_last_row():
                     ypos = bounds[1]
-                    ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen,
-                                                         ypos + ylen),
-                            **d_kwargs)
+                    self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
 
             if ax.is_last_col():
                 xpos = bounds[0] + bounds[2]
                 if not ax.is_first_row():
                     ypos = bounds[1] + bounds[3]
-                    ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen),
-                             **d_kwargs)
+                    self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
                 if not ax.is_last_row():
                     ypos = bounds[1]
-                    ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen),
-                             **d_kwargs)
-
+                    self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
 
     def set_spines(self):
         """Gets rid of the spines of internal axes that are not boarder spines.
@@ -199,9 +192,14 @@ class BrokenAxes:
                 ax.xaxis.set_major_locator(ticker.MultipleLocator(xbase))
 
     def __getattr__(self, method):
+        """Catch all methods that are not defined and pass to internal axes
+         (e.g. plot, errorbar, etc.).
+        """
         return CallCurator(method, self)
 
     def subax_call(self, method, args, kwargs):
+        """Apply method call to all internal axes. Called by CallCurator.
+        """
         result = []
         for ax in self.axs:
             ax.xaxis.set_major_locator(ticker.AutoLocator())
@@ -213,7 +211,7 @@ class BrokenAxes:
 
         return result
 
-    def set_xlabel(self, label, labelpad=20, **kwargs):
+    def set_xlabel(self, label, labelpad=15, **kwargs):
         return self.big_ax.set_xlabel(label, labelpad=labelpad, **kwargs)
 
     def set_ylabel(self, label, labelpad=30, **kwargs):
@@ -232,12 +230,14 @@ class BrokenAxes:
 
 
 class CallCurator:
+    """Used by BrokenAxes.__getattr__ to pass methods to internal axes."""
     def __init__(self, method, broken_axes):
         self.method = method
         self.broken_axes = broken_axes
 
     def __call__(self, *args, **kwargs):
         return self.broken_axes.subax_call(self.method, args, kwargs)
+
 
 def brokenaxes(*args, **kwargs):
     """Convenience method for `BrokenAxes` class.
