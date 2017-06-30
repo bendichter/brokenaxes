@@ -81,6 +81,17 @@ class BrokenAxes:
                     ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen),
                              **d_kwargs)
 
+            if ax.is_first_row():
+                ypos = bounds[1] + bounds[3]
+                if not ax.is_last_col():
+                    xpos = bounds[0] + bounds[2]
+                    ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen),
+                            **d_kwargs)
+                if not ax.is_first_col():
+                    xpos = bounds[0]
+                    ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen),
+                            **d_kwargs)
+
             if ax.is_first_col():
                 xpos = bounds[0]
                 if not ax.is_first_row():
@@ -92,6 +103,18 @@ class BrokenAxes:
                     ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen),
                              **d_kwargs)
 
+            if ax.is_last_col():
+                xpos = bounds[0] + bounds[2]
+                if not ax.is_first_row():
+                    ypos = bounds[1] + bounds[3]
+                    ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen),
+                             **d_kwargs)
+                if not ax.is_last_row():
+                    ypos = bounds[1]
+                    ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen),
+                             **d_kwargs)
+
+
     def set_spines(self):
         for ax in self.axs:
             ax.xaxis.tick_bottom()
@@ -99,12 +122,12 @@ class BrokenAxes:
             if not ax.is_last_row():
                 ax.spines['bottom'].set_visible(False)
                 ax.set_xticks([])
-            if self.despine or not ax.is_first_row():
+            if not ax.is_first_row():
                 ax.spines['top'].set_visible(False)
             if not ax.is_first_col():
                 ax.spines['left'].set_visible(False)
                 ax.set_yticks([])
-            if self.despine or not ax.is_last_col():
+            if not ax.is_last_col():
                 ax.spines['right'].set_visible(False)
 
     def standardize_ticks(self, xbase=None, ybase=None):
