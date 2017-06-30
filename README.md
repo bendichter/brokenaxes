@@ -35,4 +35,4 @@ bax.set_ylabel('value')
 * Plot multiple lines.
 * Legend with positioning relative to entire broken axes object
 * x and y label centered to entire x and y plot
-* Make brokenaxes object a subplot itself with subplot_spec from GridSpec.
+* Make brokenaxes object a subplot itself with `matplotlib.GridSpec.subplot_spec`.
