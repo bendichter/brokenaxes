@@ -34,5 +34,5 @@ bax.set_ylabel('value')
 * Automatically scales axes according to relative ranges.
 * Plot multiple lines.
 * Legend with positioning relative to entire broken axes object
-* x and y label centered to entire x and y plot
+* x and y label centered to entire plot
 * Make brokenaxes object a subplot itself with `matplotlib.GridSpec.subplot_spec`.
