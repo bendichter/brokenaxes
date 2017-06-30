@@ -5,6 +5,8 @@ from copy import deepcopy
 
 import numpy as np
 
+__author__ = 'Ben Dichter'
+
 
 class BrokenAxes:
     def __init__(self, xlims=None, ylims=None, d=.015, tilt=45,
@@ -19,14 +21,24 @@ class BrokenAxes:
             unsplit.
         d: (optional) double
             Length of diagonal split mark used to indicate broken axes
-        tilt: double
+        tilt: (optional) double
             Angle of diagonal split mark
-        subplot_spec: Gridspec.subplot_spec
+        subplot_spec: (optional) None or Gridspec.subplot_spec
             Defines a subplot
-        fig: Figure
+        fig: (optional) Figure
         despine: (optional) bool
+            Get rid of right and top spines. Default: True
+        wspace, hspace: (optional) bool
+            Change the size of the horizontal or vertical gaps
         args, kwargs: (optional)
             Passed to gridspec.GridSpec
+
+        Notes
+        -----
+        The broken axes effect is acheived by creating a number of smaller axes and
+        setting their position and data ranges. A "big_ax" is used for methods
+        that need the position of the entire broken axes object, e.g.
+        `set_xlabel`.
         """
 
         self.despine = despine
