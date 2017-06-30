@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import matplotlib.ticker as ticker
+from matplotlib import rcParams
 
 import numpy as np
 
@@ -65,7 +66,8 @@ class BrokenAxes:
         size = self.fig.get_size_inches()
         ylen = d * np.sin(tilt * np.pi / 180) * size[0] / size[1]
         xlen = d * np.cos(tilt * np.pi / 180)
-        d_kwargs = dict(transform=self.fig.transFigure, color='k', clip_on=False)
+        d_kwargs = dict(transform=self.fig.transFigure, color='k', clip_on=False,
+                        lw=rcParams['axes.linewidth'])
         for ax in self.axs:
             bounds = ax.get_position().bounds
             if ax.is_last_row():
