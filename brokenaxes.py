@@ -167,12 +167,12 @@ class BrokenAxes:
             if not ax.is_last_row():
                 ax.spines['bottom'].set_visible(False)
                 ax.set_xticks([])
-            if not ax.is_first_row():
+            if self.despine or not ax.is_first_row():
                 ax.spines['top'].set_visible(False)
             if not ax.is_first_col():
                 ax.spines['left'].set_visible(False)
                 ax.set_yticks([])
-            if not ax.is_last_col():
+            if self.despine or not ax.is_last_col():
                 ax.spines['right'].set_visible(False)
 
     def standardize_ticks(self, xbase=None, ybase=None):
