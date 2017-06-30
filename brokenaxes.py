@@ -25,7 +25,8 @@ class BrokenAxes:
             Angle of diagonal split mark
         subplot_spec: (optional) None or Gridspec.subplot_spec
             Defines a subplot
-        fig: (optional) Figure
+        fig: (optional) None or Figure
+            If no figure is defined, `plt.gcf()` is used
         despine: (optional) bool
             Get rid of right and top spines. Default: True
         wspace, hspace: (optional) bool
