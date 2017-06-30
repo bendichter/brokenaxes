@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import matplotlib.ticker as ticker
-from copy import deepcopy
+from matplotlib import rcParams
 
 import numpy as np
 
@@ -105,8 +105,8 @@ class BrokenAxes:
         size = self.fig.get_size_inches()
         ylen = d * np.sin(tilt * np.pi / 180) * size[0] / size[1]
         xlen = d * np.cos(tilt * np.pi / 180)
-        d_kwargs = dict(transform=self.fig.transFigure, color='k',
-                        clip_on=False)
+        d_kwargs = dict(transform=self.fig.transFigure, color='k', clip_on=False,
+                        lw=rcParams['axes.linewidth'])
         for ax in self.axs:
             bounds = ax.get_position().bounds
             if ax.is_last_row():
@@ -122,6 +122,17 @@ class BrokenAxes:
                                                          ypos + ylen),
                             **d_kwargs)
 
+            if ax.is_first_row():
+                ypos = bounds[1] + bounds[3]
+                if not ax.is_last_col():
+                    xpos = bounds[0] + bounds[2]
+                    ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen),
+                            **d_kwargs)
+                if not ax.is_first_col():
+                    xpos = bounds[0]
+                    ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen),
+                            **d_kwargs)
+
             if ax.is_first_col():
                 xpos = bounds[0]
                 if not ax.is_first_row():
@@ -135,6 +146,18 @@ class BrokenAxes:
                                                          ypos + ylen),
                             **d_kwargs)
 
+            if ax.is_last_col():
+                xpos = bounds[0] + bounds[2]
+                if not ax.is_first_row():
+                    ypos = bounds[1] + bounds[3]
+                    ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen),
+                             **d_kwargs)
+                if not ax.is_last_row():
+                    ypos = bounds[1]
+                    ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen),
+                             **d_kwargs)
+
+
     def set_spines(self):
         """Gets rid of the spines of internal axes that are not boarder spines.
         """
@@ -144,12 +167,12 @@ class BrokenAxes:
             if not ax.is_last_row():
                 ax.spines['bottom'].set_visible(False)
                 ax.set_xticks([])
-            if self.despine or not ax.is_first_row():
+            if not ax.is_first_row():
                 ax.spines['top'].set_visible(False)
             if not ax.is_first_col():
                 ax.spines['left'].set_visible(False)
                 ax.set_yticks([])
-            if self.despine or not ax.is_last_col():
+            if not ax.is_last_col():
                 ax.spines['right'].set_visible(False)
 
     def standardize_ticks(self, xbase=None, ybase=None):
@@ -175,27 +198,20 @@ class BrokenAxes:
             if ax.is_last_row():
                 ax.xaxis.set_major_locator(ticker.MultipleLocator(xbase))
 
-    def plot(self, *args, **kwargs):
-        """
-        Parameters
-        ----------
-        args, kwargs: passed to `plt.plot`
+    def __getattr__(self, method):
+        return CallCurator(method, self)
 
-        Returns
-        -------
-        out: list of plot objects
-            Outputs from plot calls.
-        """
-        out = []
+    def subax_call(self, method, args, kwargs):
+        result = []
         for ax in self.axs:
             ax.xaxis.set_major_locator(ticker.AutoLocator())
             ax.yaxis.set_major_locator(ticker.AutoLocator())
-            out += ax.plot(*args, **kwargs)
+            result.append(getattr(ax, method)(*args, **kwargs))
 
         self.standardize_ticks()
         self.set_spines()
 
-        return out
+        return result
 
     def set_xlabel(self, label, labelpad=20, **kwargs):
         return self.big_ax.set_xlabel(label, labelpad=labelpad, **kwargs)
@@ -214,6 +230,14 @@ class BrokenAxes:
     def axis(self, *args, **kwargs):
         [ax.axis(*args, **kwargs) for ax in self.axs]
 
+
+class CallCurator:
+    def __init__(self, method, broken_axes):
+        self.method = method
+        self.broken_axes = broken_axes
+
+    def __call__(self, *args, **kwargs):
+        return self.broken_axes.subax_call(self.method, args, kwargs)
 
 def brokenaxes(*args, **kwargs):
     """Convenience method for `BrokenAxes` class.
