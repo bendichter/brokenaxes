@@ -144,14 +144,20 @@ class BrokenAxes:
             if ax.is_last_row():
                 ax.xaxis.set_major_locator(ticker.MultipleLocator(xbase))
 
-    def plot(self, *args, **kwargs):
+    def __getattr__(self, method):
+        return CallCurator(method, self)
+
+    def subax_call(self, method, args, kwargs):
+        result = []
         for ax in self.axs:
             ax.xaxis.set_major_locator(ticker.AutoLocator())
             ax.yaxis.set_major_locator(ticker.AutoLocator())
-            ax.plot(*args, **kwargs)
+            result.append(getattr(ax, method)(*args, **kwargs))
 
         self.standardize_ticks()
         self.set_spines()
+
+        return result
 
     def set_xlabel(self, label, labelpad=20, **kwargs):
         self.big_ax.set_xlabel(label, labelpad=labelpad, **kwargs)
@@ -170,6 +176,14 @@ class BrokenAxes:
     def axis(self, *args, **kwargs):
         [ax.axis(*args, **kwargs) for ax in self.axs]
 
+
+class CallCurator:
+    def __init__(self, method, broken_axes):
+        self.method = method
+        self.broken_axes = broken_axes
+
+    def __call__(self, *args, **kwargs):
+        return self.broken_axes.subax_call(self.method, args, kwargs)
 
 def brokenaxes(*args, **kwargs):
     return BrokenAxes(*args, **kwargs)
