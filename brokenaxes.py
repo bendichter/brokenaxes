@@ -124,15 +124,6 @@ class BrokenAxes:
                     xpos = bounds[0]
                     self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
 
-            if ax.is_first_row():
-                ypos = bounds[1] + bounds[3]
-                if not ax.is_last_col():
-                    xpos = bounds[0] + bounds[2]
-                    self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
-                if not ax.is_first_col():
-                    xpos = bounds[0]
-                    self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
-
             if ax.is_first_col():
                 xpos = bounds[0]
                 if not ax.is_first_row():
@@ -142,14 +133,24 @@ class BrokenAxes:
                     ypos = bounds[1]
                     self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
 
-            if ax.is_last_col():
-                xpos = bounds[0] + bounds[2]
-                if not ax.is_first_row():
+            if not self.despine:
+                if ax.is_first_row():
                     ypos = bounds[1] + bounds[3]
-                    self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
-                if not ax.is_last_row():
-                    ypos = bounds[1]
-                    self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
+                    if not ax.is_last_col():
+                        xpos = bounds[0] + bounds[2]
+                        self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
+                    if not ax.is_first_col():
+                        xpos = bounds[0]
+                        self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
+
+                if ax.is_last_col():
+                    xpos = bounds[0] + bounds[2]
+                    if not ax.is_first_row():
+                        ypos = bounds[1] + bounds[3]
+                        self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
+                    if not ax.is_last_row():
+                        ypos = bounds[1]
+                        self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
 
     def set_spines(self):
         """Gets rid of the spines of internal axes that are not boarder spines.
