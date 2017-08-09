@@ -153,7 +153,7 @@ class BrokenAxes:
                         self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
 
     def set_spines(self):
-        """Gets rid of the spines of internal axes that are not boarder spines.
+        """Removes the spines of internal axes that are not boarder spines.
         """
         for ax in self.axs:
             ax.xaxis.tick_bottom()
