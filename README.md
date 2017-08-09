@@ -7,6 +7,7 @@ brokenaxes makes matplotlib plots with breaks in the axes for showing data acros
 [![PyPI](https://img.shields.io/pypi/v/brokenaxes.svg?style=plastic)](https://pypi.python.org/pypi/brokenaxes)
 
 ## Installation
+I recommend the [Anaconda python distribution](http://continuum.io/downloads)
 ```
 pip install brokenaxes
 ```
