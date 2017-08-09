@@ -56,5 +56,5 @@ bax.hist(x, histtype='bar')
 * x and y label centered to entire plot
 * Make brokenaxes object a subplot itself with `matplotlib.GridSpec.subplot_spec`.
 
-### Advice
-Please use this tool wisely. Any data visaulization techique can be used to elucidate trends in the data, and can be used to manipulate and mislead. The latter is particularly true for broken axes plots, so please try to use them responsibly.
+### Life advice
+Please use this tool wisely. Any data visaulization techique can be used to elucidate trends in the data, and can be used to manipulate and mislead. The latter is particularly true for broken axes plots, so please try to use them responsibly. Other than that, this software is free to use for any purpose.
