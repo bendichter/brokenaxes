@@ -35,7 +35,7 @@ setup(
     keywords='data visualization',
 
     #packages=find_packages(exclude=['docs']),
-    #   py_modules=["brokenaxes"],
+    py_modules=["brokenaxes"],
 
     # List run-time dependencies here.  These will be installed by pip when
     # your project is installed. For an analysis of "install_requires" vs pip's
