@@ -12,7 +12,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='brokenaxes',
-    version='0.1',
+    version='0.3',
     description='Create broken axes',
     long_description=long_description,
     author='Ben Dichter',

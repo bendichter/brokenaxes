@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import matplotlib.ticker as ticker
 from matplotlib import rcParams
+from datetime import timedelta
 
 import numpy as np
 
@@ -43,6 +44,9 @@ class BrokenAxes:
         """
 
         self.despine = despine
+        self.d = d
+        self.tilt = tilt
+
         if fig is None:
             self.fig = plt.gcf()
         else:
@@ -53,10 +57,18 @@ class BrokenAxes:
         else:
             width_ratios = [1]
 
+        # handle datetime xlims
+        if type(width_ratios[0]) == timedelta:
+            width_ratios = [tt.total_seconds() for tt in width_ratios]
+
         if ylims:
             height_ratios = [i[1] - i[0] for i in ylims[::-1]]
         else:
             height_ratios = [1]
+
+        # handle datetime ylims
+        if type(height_ratios[0]) == timedelta:
+            width_ratios = [tt.total_seconds() for tt in height_ratios]
 
         ncols, nrows = len(width_ratios), len(height_ratios)
 
@@ -89,16 +101,16 @@ class BrokenAxes:
                 ax.set_xlim(xlims[i % ncols])
         self.standardize_ticks()
         if d:
-            self.draw_diags(d, tilt)
+            self.draw_diags()
         if despine:
             self.set_spines()
 
     @staticmethod
     def draw_diag(ax, xpos, xlen, ypos, ylen, **kwargs):
-        ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen),
-                **kwargs)
+        return ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen),
+                       **kwargs)
 
-    def draw_diags(self, d, tilt):
+    def draw_diags(self):
         """
         Parameters
         ----------
@@ -108,10 +120,12 @@ class BrokenAxes:
             Angle of diagonal split mark
         """
         size = self.fig.get_size_inches()
-        ylen = d * np.sin(tilt * np.pi / 180) * size[0] / size[1]
-        xlen = d * np.cos(tilt * np.pi / 180)
+        ylen = self.d * np.sin(self.tilt * np.pi / 180) * size[0] / size[1]
+        xlen = self.d * np.cos(self.tilt * np.pi / 180)
         d_kwargs = dict(transform=self.fig.transFigure, color='k',
                         clip_on=False, lw=rcParams['axes.linewidth'])
+
+        ds = []
         for ax in self.axs:
             bounds = ax.get_position().bounds
 
@@ -119,38 +133,45 @@ class BrokenAxes:
                 ypos = bounds[1]
                 if not ax.is_last_col():
                     xpos = bounds[0] + bounds[2]
-                    self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
+                    ds += self.draw_diag(ax, xpos, xlen, ypos, ylen,
+                                         **d_kwargs)
                 if not ax.is_first_col():
                     xpos = bounds[0]
-                    self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
+                    ds += self.draw_diag(ax, xpos, xlen, ypos, ylen,
+                                         **d_kwargs)
 
             if ax.is_first_col():
                 xpos = bounds[0]
                 if not ax.is_first_row():
                     ypos = bounds[1] + bounds[3]
-                    self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
+                    ds += self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
                 if not ax.is_last_row():
                     ypos = bounds[1]
-                    self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
+                    ds += self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
 
             if not self.despine:
                 if ax.is_first_row():
                     ypos = bounds[1] + bounds[3]
                     if not ax.is_last_col():
                         xpos = bounds[0] + bounds[2]
-                        self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
+                        ds += self.draw_diag(ax, xpos, xlen, ypos, ylen,
+                                             **d_kwargs)
                     if not ax.is_first_col():
                         xpos = bounds[0]
-                        self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
+                        ds += self.draw_diag(ax, xpos, xlen, ypos, ylen,
+                                             **d_kwargs)
 
                 if ax.is_last_col():
                     xpos = bounds[0] + bounds[2]
                     if not ax.is_first_row():
                         ypos = bounds[1] + bounds[3]
-                        self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
+                        ds += self.draw_diag(ax, xpos, xlen, ypos, ylen,
+                                             **d_kwargs)
                     if not ax.is_last_row():
                         ypos = bounds[1]
-                        self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
+                        ds += self.draw_diag(ax, xpos, xlen, ypos, ylen,
+                                             **d_kwargs)
+        self.diag_handles = ds
 
     def set_spines(self):
         """Removes the spines of internal axes that are not boarder spines.
