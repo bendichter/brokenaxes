@@ -29,7 +29,7 @@ bax.set_ylabel('value')
 ```
 ![example1](example1.png)
 
-Create subplots:
+### Create subplots:
 
 ```python
 from brokenaxes import brokenaxes
@@ -57,6 +57,9 @@ bax.hist(x, histtype='bar')
 * x and y label centered to entire plot
 * Make brokenaxes object a subplot itself with `matplotlib.GridSpec.subplot_spec`.
 * xlims and ylims may be datetime.datetime objects
+
+### Gallery:
+If you make a plot that you are proud of with this tool, send me a png and code and I'll add it to the gallery!
 
 ### Life advice
 Please use this tool wisely. Any data visaulization techique can be used to elucidate trends in the data, and can be used to manipulate and mislead. The latter is particularly true for broken axes plots, so please try to use them responsibly. Other than that, this software is free to use for any purpose.
