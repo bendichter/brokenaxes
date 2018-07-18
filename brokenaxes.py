@@ -53,7 +53,11 @@ class BrokenAxes:
             self.fig = fig
 
         if xlims:
-            width_ratios = [i[1] - i[0] for i in xlims]
+            # Check if the user has asked for a log scale on x axis
+            if kwargs.pop('xscale', None) == 'log':
+                width_ratios = [np.log(i[1]) - np.log(i[0]) for i in xlims]
+            else:
+                width_ratios = [i[1] - i[0] for i in xlims]
         else:
             width_ratios = [1]
 
@@ -62,7 +66,12 @@ class BrokenAxes:
             width_ratios = [tt.total_seconds() for tt in width_ratios]
 
         if ylims:
-            height_ratios = [i[1] - i[0] for i in ylims[::-1]]
+            # Check if the user has asked for a log scale on y axis
+            if kwargs.pop('yscale', None) == 'log':
+                height_ratios = [np.log(i[1]) - np.log(i[0])
+                                 for i in ylims[::-1]]
+            else:
+                height_ratios = [i[1] - i[0] for i in ylims[::-1]]
         else:
             height_ratios = [1]
 
@@ -207,17 +216,35 @@ class BrokenAxes:
             for that axis.
         """
         if xbase is None:
-            xbase = max(ax.xaxis.get_ticklocs()[1] - ax.xaxis.get_ticklocs()[0]
-                        for ax in self.axs if ax.is_last_row())
+            if self.axs[0].xaxis.get_scale() == 'log':
+                xbase = max(ax.xaxis.get_ticklocs()[1] /
+                            ax.xaxis.get_ticklocs()[0]
+                            for ax in self.axs if ax.is_last_row())
+            else:
+                xbase = max(ax.xaxis.get_ticklocs()[1] -
+                            ax.xaxis.get_ticklocs()[0]
+                            for ax in self.axs if ax.is_last_row())
         if ybase is None:
-            ybase = max(ax.yaxis.get_ticklocs()[1] - ax.yaxis.get_ticklocs()[0]
-                        for ax in self.axs if ax.is_first_col())
+            if self.axs[0].yaxis.get_scale() == 'log':
+                ybase = max(ax.yaxis.get_ticklocs()[1] /
+                            ax.yaxis.get_ticklocs()[0]
+                            for ax in self.axs if ax.is_first_col())
+            else:
+                ybase = max(ax.yaxis.get_ticklocs()[1] -
+                            ax.yaxis.get_ticklocs()[0]
+                            for ax in self.axs if ax.is_first_col())
 
         for ax in self.axs:
             if ax.is_first_col():
-                ax.yaxis.set_major_locator(ticker.MultipleLocator(ybase))
+                if ax.yaxis.get_scale() == 'log':
+                    ax.yaxis.set_major_locator(ticker.LogLocator(ybase))
+                else:
+                    ax.yaxis.set_major_locator(ticker.MultipleLocator(ybase))
             if ax.is_last_row():
-                ax.xaxis.set_major_locator(ticker.MultipleLocator(xbase))
+                if ax.xaxis.get_scale() == 'log':
+                    ax.xaxis.set_major_locator(ticker.LogLocator(xbase))
+                else:
+                    ax.xaxis.set_major_locator(ticker.MultipleLocator(xbase))
 
     def __getattr__(self, method):
         """Catch all methods that are not defined and pass to internal axes
@@ -230,8 +257,14 @@ class BrokenAxes:
         """
         result = []
         for ax in self.axs:
-            ax.xaxis.set_major_locator(ticker.AutoLocator())
-            ax.yaxis.set_major_locator(ticker.AutoLocator())
+            if ax.xaxis.get_scale() == 'log':
+                ax.xaxis.set_major_locator(ticker.LogLocator())
+            else:
+                ax.xaxis.set_major_locator(ticker.AutoLocator())
+            if ax.yaxis.get_scale() == 'log':
+                ax.yaxis.set_major_locator(ticker.LogLocator())
+            else:
+                ax.yaxis.set_major_locator(ticker.AutoLocator())
             result.append(getattr(ax, method)(*args, **kwargs))
 
         self.standardize_ticks()

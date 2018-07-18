@@ -48,6 +48,30 @@ bax.hist(x, histtype='bar')
 ```
 ![example2](example2.png)
 
+### Log scales:
+
+```python
+import matplotlib.pyplot as plt
+from brokenaxes import brokenaxes
+import numpy as np
+
+fig = plt.figure(figsize=(5,5))
+bax = brokenaxes(xlims=((1, 500), (600, 10000)),
+	     ylims=((1, 500), (600, 10000)),
+		 hspace=.15, xscale='log', yscale='log')
+
+x = np.logspace(0.0, 4, 100)
+bax.loglog(x, x, label='$y=x=10^{0}$ to $10^{4}$')
+
+bax.legend(loc='best')
+bax.grid(axis='both', which='major', ls='-')
+bax.grid(axis='both', which='minor', ls='--', alpha=0.4)
+bax.set_xlabel('x')
+bax.set_ylabel('y')
+plt.show()
+```
+![example3](example3.png)
+
 ### Features:
 * Break x and y axes.
 * Supports multiple breaks on a single axis.
@@ -57,6 +81,7 @@ bax.hist(x, histtype='bar')
 * x and y label centered to entire plot
 * Make brokenaxes object a subplot itself with `matplotlib.GridSpec.subplot_spec`.
 * xlims and ylims may be datetime.datetime objects
+* Supports log scales.
 
 ### Gallery:
 If you make a plot that you are proud of with this tool, send me a png and code and I'll add it to the gallery!
