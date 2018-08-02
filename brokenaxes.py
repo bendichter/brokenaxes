@@ -12,7 +12,7 @@ __author__ = 'Ben Dichter'
 class BrokenAxes:
     def __init__(self, xlims=None, ylims=None, d=.015, tilt=45,
                  subplot_spec=None, fig=None, despine=True,
-                 *args, **kwargs):
+                 xscale=None, yscale=None, *args, **kwargs):
         """Creates a grid of axes that act like a single broken axes
 
         Parameters
@@ -32,6 +32,8 @@ class BrokenAxes:
             Get rid of right and top spines. Default: True
         wspace, hspace: (optional) bool
             Change the size of the horizontal or vertical gaps
+        xscale, yscale: (optional) None | str
+            None: linear axis (default), 'log': log axis
         args, kwargs: (optional)
             Passed to gridspec.GridSpec
 
@@ -54,7 +56,7 @@ class BrokenAxes:
 
         if xlims:
             # Check if the user has asked for a log scale on x axis
-            if kwargs.pop('xscale', None) == 'log':
+            if xscale == 'log':
                 width_ratios = [np.log(i[1]) - np.log(i[0]) for i in xlims]
             else:
                 width_ratios = [i[1] - i[0] for i in xlims]
@@ -67,7 +69,7 @@ class BrokenAxes:
 
         if ylims:
             # Check if the user has asked for a log scale on y axis
-            if kwargs.pop('yscale', None) == 'log':
+            if yscale == 'log':
                 height_ratios = [np.log(i[1]) - np.log(i[0])
                                  for i in ylims[::-1]]
             else:
