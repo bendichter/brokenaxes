@@ -6,6 +6,17 @@ brokenaxes makes matplotlib plots with breaks in the axes for showing data acros
 
 [![PyPI](https://img.shields.io/pypi/v/brokenaxes.svg?style=plastic)](https://pypi.python.org/pypi/brokenaxes)
 
+### Features
+* Break x and y axes.
+* Supports multiple breaks on a single axis.
+* Automatically scales axes according to relative ranges.
+* Plot multiple lines.
+* Legend with positioning relative to entire broken axes object
+* x and y label centered to entire plot
+* Make brokenaxes object a subplot itself with `matplotlib.GridSpec.subplot_spec`.
+* xlims and ylims may be `datetime.datetime` objects
+* Supports log scales.
+
 ## Installation
 I recommend the [Anaconda python distribution](http://continuum.io/downloads)
 ```
@@ -29,7 +40,7 @@ bax.set_ylabel('value')
 ```
 ![example1](example1.png)
 
-### Create subplots:
+### Create subplots
 
 ```python
 from brokenaxes import brokenaxes
@@ -48,7 +59,7 @@ bax.hist(x, histtype='bar')
 ```
 ![example2](example2.png)
 
-### Log scales:
+### Log scales
 
 ```python
 import matplotlib.pyplot as plt
@@ -72,18 +83,7 @@ plt.show()
 ```
 ![example3](example3.png)
 
-### Features:
-* Break x and y axes.
-* Supports multiple breaks on a single axis.
-* Automatically scales axes according to relative ranges.
-* Plot multiple lines.
-* Legend with positioning relative to entire broken axes object
-* x and y label centered to entire plot
-* Make brokenaxes object a subplot itself with `matplotlib.GridSpec.subplot_spec`.
-* xlims and ylims may be datetime.datetime objects
-* Supports log scales.
-
-### Gallery:
+### Gallery
 If you make a plot that you are proud of with this tool, send me a png and code and I'll add it to the gallery!
 
 ### Life advice
