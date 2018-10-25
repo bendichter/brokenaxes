@@ -15,6 +15,7 @@ class BrokenAxes:
                  xscale=None, yscale=None, diag_color='k',
                  *args, **kwargs):
         """Creates a grid of axes that act like a single broken axes
+        
         Parameters
         ----------
         xlims, ylims: (optional) None or tuple of tuples, len 2
@@ -38,6 +39,7 @@ class BrokenAxes:
             color of diagonal lines
         args, kwargs: (optional)
             Passed to gridspec.GridSpec
+            
         Notes
         -----
         The broken axes effect is achieved by creating a number of smaller axes
@@ -125,6 +127,7 @@ class BrokenAxes:
 
     def draw_diags(self):
         """
+        
         Parameters
         ----------
         d: float
@@ -211,6 +214,7 @@ class BrokenAxes:
 
     def standardize_ticks(self, xbase=None, ybase=None):
         """Make all of the internal axes share tick bases
+        
         Parameters
         ----------
         xbase, ybase: (optional) None or float
@@ -305,9 +309,11 @@ class CallCurator:
 
 def brokenaxes(*args, **kwargs):
     """Convenience method for `BrokenAxes` class.
+    
     Parameters
     ----------
     args, kwargs: passed to `BrokenAxes()`
+    
     Returns
     -------
     out: `BrokenAxes`
