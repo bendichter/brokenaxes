@@ -12,9 +12,10 @@ __author__ = 'Ben Dichter'
 class BrokenAxes:
     def __init__(self, xlims=None, ylims=None, d=.015, tilt=45,
                  subplot_spec=None, fig=None, despine=True,
-                 xscale=None, yscale=None, *args, **kwargs):
+                 xscale=None, yscale=None, diag_color='k',
+                 *args, **kwargs):
         """Creates a grid of axes that act like a single broken axes
-
+        
         Parameters
         ----------
         xlims, ylims: (optional) None or tuple of tuples, len 2
@@ -34,9 +35,11 @@ class BrokenAxes:
             Change the size of the horizontal or vertical gaps
         xscale, yscale: (optional) None | str
             None: linear axis (default), 'log': log axis
+        diag_color: (optional)
+            color of diagonal lines
         args, kwargs: (optional)
             Passed to gridspec.GridSpec
-
+            
         Notes
         -----
         The broken axes effect is achieved by creating a number of smaller axes
@@ -45,6 +48,7 @@ class BrokenAxes:
         `set_xlabel`.
         """
 
+        self.diag_color = diag_color
         self.despine = despine
         self.d = d
         self.tilt = tilt
@@ -123,6 +127,7 @@ class BrokenAxes:
 
     def draw_diags(self):
         """
+        
         Parameters
         ----------
         d: float
@@ -133,7 +138,7 @@ class BrokenAxes:
         size = self.fig.get_size_inches()
         ylen = self.d * np.sin(self.tilt * np.pi / 180) * size[0] / size[1]
         xlen = self.d * np.cos(self.tilt * np.pi / 180)
-        d_kwargs = dict(transform=self.fig.transFigure, color='k',
+        d_kwargs = dict(transform=self.fig.transFigure, color=self.diag_color,
                         clip_on=False, lw=rcParams['axes.linewidth'])
 
         ds = []
@@ -209,7 +214,7 @@ class BrokenAxes:
 
     def standardize_ticks(self, xbase=None, ybase=None):
         """Make all of the internal axes share tick bases
-
+        
         Parameters
         ----------
         xbase, ybase: (optional) None or float
@@ -304,11 +309,11 @@ class CallCurator:
 
 def brokenaxes(*args, **kwargs):
     """Convenience method for `BrokenAxes` class.
-
+    
     Parameters
     ----------
     args, kwargs: passed to `BrokenAxes()`
-
+    
     Returns
     -------
     out: `BrokenAxes`
