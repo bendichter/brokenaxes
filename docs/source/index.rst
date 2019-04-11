@@ -15,7 +15,6 @@ Contents:
    :maxdepth: 2
 
 
-
 Indices and tables
 ==================
 
