@@ -59,7 +59,7 @@ class BrokenAxes:
         else:
             self.fig = fig
 
-        if width_ratios is not None:
+        if width_ratios is None:
             if xlims:
                 # Check if the user has asked for a log scale on x axis
                 if xscale == 'log':
@@ -75,7 +75,7 @@ class BrokenAxes:
         else:
             width_ratios = kwargs["width_ratios"]
 
-        if height_ratios is not None:
+        if height_ratios is None:
             if ylims:
                 # Check if the user has asked for a log scale on y axis
                 if yscale == 'log':
