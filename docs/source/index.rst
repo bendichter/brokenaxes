@@ -14,6 +14,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+    Examples <auto_examples/index.rst>
 
 Indices and tables
 ==================
