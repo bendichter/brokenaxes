@@ -38,6 +38,9 @@ class BrokenAxes:
             None: linear axis (default), 'log': log axis
         diag_color: (optional)
             color of diagonal lines
+        {width, height}_ratios: (optional) | list of int
+            The width/height ratios of the axes, passed to gridspec.GridSpec.
+            By default, adapt the axes for a 1:1 scale given the ylims/xlims.
         args, kwargs: (optional)
             Passed to gridspec.GridSpec
             
@@ -72,8 +75,6 @@ class BrokenAxes:
             # handle datetime xlims
             if type(width_ratios[0]) == timedelta:
                 width_ratios = [tt.total_seconds() for tt in width_ratios]
-        else:
-            width_ratios = kwargs["width_ratios"]
 
         if height_ratios is None:
             if ylims:
@@ -89,8 +90,6 @@ class BrokenAxes:
             # handle datetime ylims
             if type(height_ratios[0]) == timedelta:
                 width_ratios = [tt.total_seconds() for tt in height_ratios]
-        else:
-            height_ratios = kwargs["height_ratios"]
 
         ncols, nrows = len(width_ratios), len(height_ratios)
 
