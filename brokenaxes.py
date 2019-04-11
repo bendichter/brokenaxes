@@ -13,6 +13,7 @@ class BrokenAxes:
     def __init__(self, xlims=None, ylims=None, d=.015, tilt=45,
                  subplot_spec=None, fig=None, despine=True,
                  xscale=None, yscale=None, diag_color='k',
+                 height_ratios=None, width_ratios=None,
                  *args, **kwargs):
         """Creates a grid of axes that act like a single broken axes
         
@@ -37,6 +38,9 @@ class BrokenAxes:
             None: linear axis (default), 'log': log axis
         diag_color: (optional)
             color of diagonal lines
+        {width, height}_ratios: (optional) | list of int
+            The width/height ratios of the axes, passed to gridspec.GridSpec.
+            By default, adapt the axes for a 1:1 scale given the ylims/xlims.
         args, kwargs: (optional)
             Passed to gridspec.GridSpec
             
@@ -58,32 +62,34 @@ class BrokenAxes:
         else:
             self.fig = fig
 
-        if xlims:
-            # Check if the user has asked for a log scale on x axis
-            if xscale == 'log':
-                width_ratios = [np.log(i[1]) - np.log(i[0]) for i in xlims]
+        if width_ratios is None:
+            if xlims:
+                # Check if the user has asked for a log scale on x axis
+                if xscale == 'log':
+                    width_ratios = [np.log(i[1]) - np.log(i[0]) for i in xlims]
+                else:
+                    width_ratios = [i[1] - i[0] for i in xlims]
             else:
-                width_ratios = [i[1] - i[0] for i in xlims]
-        else:
-            width_ratios = [1]
+                width_ratios = [1]
 
-        # handle datetime xlims
-        if type(width_ratios[0]) == timedelta:
-            width_ratios = [tt.total_seconds() for tt in width_ratios]
+            # handle datetime xlims
+            if type(width_ratios[0]) == timedelta:
+                width_ratios = [tt.total_seconds() for tt in width_ratios]
 
-        if ylims:
-            # Check if the user has asked for a log scale on y axis
-            if yscale == 'log':
-                height_ratios = [np.log(i[1]) - np.log(i[0])
-                                 for i in ylims[::-1]]
+        if height_ratios is None:
+            if ylims:
+                # Check if the user has asked for a log scale on y axis
+                if yscale == 'log':
+                    height_ratios = [np.log(i[1]) - np.log(i[0])
+                                     for i in ylims[::-1]]
+                else:
+                    height_ratios = [i[1] - i[0] for i in ylims[::-1]]
             else:
-                height_ratios = [i[1] - i[0] for i in ylims[::-1]]
-        else:
-            height_ratios = [1]
+                height_ratios = [1]
 
-        # handle datetime ylims
-        if type(height_ratios[0]) == timedelta:
-            width_ratios = [tt.total_seconds() for tt in height_ratios]
+            # handle datetime ylims
+            if type(height_ratios[0]) == timedelta:
+                width_ratios = [tt.total_seconds() for tt in height_ratios]
 
         ncols, nrows = len(width_ratios), len(height_ratios)
 
