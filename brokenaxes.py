@@ -58,32 +58,38 @@ class BrokenAxes:
         else:
             self.fig = fig
 
-        if xlims:
-            # Check if the user has asked for a log scale on x axis
-            if xscale == 'log':
-                width_ratios = [np.log(i[1]) - np.log(i[0]) for i in xlims]
+        if "width_ratios" not in kwargs.keys():
+            if xlims:
+                # Check if the user has asked for a log scale on x axis
+                if xscale == 'log':
+                    width_ratios = [np.log(i[1]) - np.log(i[0]) for i in xlims]
+                else:
+                    width_ratios = [i[1] - i[0] for i in xlims]
             else:
-                width_ratios = [i[1] - i[0] for i in xlims]
+                width_ratios = [1]
+
+            # handle datetime xlims
+            if type(width_ratios[0]) == timedelta:
+                width_ratios = [tt.total_seconds() for tt in width_ratios]
         else:
-            width_ratios = [1]
+            width_ratios = kwargs["width_ratios"]
 
-        # handle datetime xlims
-        if type(width_ratios[0]) == timedelta:
-            width_ratios = [tt.total_seconds() for tt in width_ratios]
-
-        if ylims:
-            # Check if the user has asked for a log scale on y axis
-            if yscale == 'log':
-                height_ratios = [np.log(i[1]) - np.log(i[0])
-                                 for i in ylims[::-1]]
+        if "height_ratios" not in kwargs.keys():
+            if ylims:
+                # Check if the user has asked for a log scale on y axis
+                if yscale == 'log':
+                    height_ratios = [np.log(i[1]) - np.log(i[0])
+                                     for i in ylims[::-1]]
+                else:
+                    height_ratios = [i[1] - i[0] for i in ylims[::-1]]
             else:
-                height_ratios = [i[1] - i[0] for i in ylims[::-1]]
-        else:
-            height_ratios = [1]
+                height_ratios = [1]
 
-        # handle datetime ylims
-        if type(height_ratios[0]) == timedelta:
-            width_ratios = [tt.total_seconds() for tt in height_ratios]
+            # handle datetime ylims
+            if type(height_ratios[0]) == timedelta:
+                width_ratios = [tt.total_seconds() for tt in height_ratios]
+        else:
+            height_ratios = kwargs["height_ratios"]
 
         ncols, nrows = len(width_ratios), len(height_ratios)
 
