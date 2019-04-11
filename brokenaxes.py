@@ -13,6 +13,7 @@ class BrokenAxes:
     def __init__(self, xlims=None, ylims=None, d=.015, tilt=45,
                  subplot_spec=None, fig=None, despine=True,
                  xscale=None, yscale=None, diag_color='k',
+                 height_ratios=None, width_ratios=None,
                  *args, **kwargs):
         """Creates a grid of axes that act like a single broken axes
         
@@ -58,7 +59,7 @@ class BrokenAxes:
         else:
             self.fig = fig
 
-        if "width_ratios" not in kwargs.keys():
+        if width_ratios is not None:
             if xlims:
                 # Check if the user has asked for a log scale on x axis
                 if xscale == 'log':
@@ -74,7 +75,7 @@ class BrokenAxes:
         else:
             width_ratios = kwargs["width_ratios"]
 
-        if "height_ratios" not in kwargs.keys():
+        if height_ratios is not None:
             if ylims:
                 # Check if the user has asked for a log scale on y axis
                 if yscale == 'log':
