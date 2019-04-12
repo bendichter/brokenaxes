@@ -115,11 +115,24 @@ class BrokenAxes:
             self.axs.append(ax)
         self.fig.add_subplot(self.big_ax)
 
+        # get last axs row and first col
+        self.last_row = []
+        self.first_col = []
+        for ax in self.axs:
+            if ax.is_last_row():
+                self.last_row.append(ax)
+            if ax.is_first_col():
+                self.first_col.append(ax)
+
+        # Set common x/y lim for ax in the same col/row
+        # and share x and y between them
         for i, ax in enumerate(self.axs):
             if ylims is not None:
                 ax.set_ylim(ylims[::-1][i//ncols])
+                ax.get_shared_y_axes().join(ax, self.first_col[i // ncols])
             if xlims is not None:
                 ax.set_xlim(xlims[i % ncols])
+                ax.get_shared_x_axes().join(ax, self.last_row[i % ncols])
         self.standardize_ticks()
         if d:
             self.draw_diags()
