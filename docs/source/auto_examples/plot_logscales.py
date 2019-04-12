@@ -2,9 +2,9 @@
 Log scales
 ==========
 
-Brokenaxe compute automatically the correct layout for a 1:1 scale. However, for
-logarithmic scales, the 1:1 scale has to be adapted. This is done via the
-`yscale` or `xscale` arguments.
+Brokenaxes computes automatically the correct layout for a 1:1 scale. For
+logarithmic scales, the 1:1 scale has to be adapted using the `yscale` or 
+`xscale` arguments.
 
 """
 
