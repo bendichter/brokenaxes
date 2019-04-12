@@ -6,7 +6,7 @@
 Welcome to brokenaxes's documentation!
 ======================================
 
-Hello :D
+brokenaxes is a library for making broken axes plots in python using matplotlib. See the examples for different use-cases.
 
 
 Contents:
@@ -15,11 +15,3 @@ Contents:
    :maxdepth: 2
 
     Examples <auto_examples/index.rst>
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
