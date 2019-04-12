@@ -1,0 +1,5 @@
+matplotlib
+numpy
+sphinx
+sphinx-gallery
+PyQt5
