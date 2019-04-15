@@ -34,7 +34,8 @@ bax.set_title("Example for different scales for the x and y axis")
 # Then, we get the different axes created and set the ticks according to the
 # axe x and y limits.
 # Since it is normal matplotlib axes, you could also set them manually, for
-# instance with `bax.axs[2].set_yticks([-100, -50, 0])`.
+# instance with `bax.first_col[1].set_yticks([-100, -50, 0])`.
+
 
 for i, ax in enumerate(bax.last_row):
     ax.xaxis.set_major_locator(ticker.AutoLocator())
@@ -43,5 +44,6 @@ for i, ax in enumerate(bax.first_col):
     ax.yaxis.set_major_locator(ticker.AutoLocator())
     ax.set_ylabel('yscale {i}'.format(i=i))
 
-# Note: it is not necessary to loop through all the axes since they all share
-# the same x and y limits in a given column or row.
+##############################################################################
+# .. note:: It is not necessary to loop through all the axes since they all
+#      share the same x and y limits in a given column or row.
