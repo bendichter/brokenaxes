@@ -1,6 +1,6 @@
 # brokenaxes
 
-![brokenaxes logo. Reference: http://www.brianhensley.net/2012/02/python-controlling-spi-bus-on.html](broken_python_snake.png)
+![brokenaxes logo. Reference: http://www.brianhensley.net/2012/02/python-controlling-spi-bus-on.html](https://raw.githubusercontent.com/bendichter/brokenaxes/master/broken_python_snake.png)
 
 brokenaxes makes matplotlib plots with breaks in the axes for showing data across a discontinuous range.
 
@@ -38,7 +38,7 @@ bax.legend(loc=3)
 bax.set_xlabel('time')
 bax.set_ylabel('value')
 ```
-![example1](example1.png)
+![example1](https://raw.githubusercontent.com/bendichter/brokenaxes/master/example1.png)
 
 ### Create subplots
 
@@ -57,7 +57,7 @@ x = np.random.poisson(3, 1000)
 bax = brokenaxes(xlims=((0, 2.5), (3, 6)), subplot_spec=sps2)
 bax.hist(x, histtype='bar')
 ```
-![example2](example2.png)
+![example2](https://raw.githubusercontent.com/bendichter/brokenaxes/master/example2.png)
 
 ### Log scales
 
@@ -81,7 +81,7 @@ bax.set_xlabel('x')
 bax.set_ylabel('y')
 plt.show()
 ```
-![example3](example3.png)
+![example3](https://raw.githubusercontent.com/bendichter/brokenaxes/master/example3.png)
 
 ### Gallery
 If you make a plot that you are proud of with this tool, send me a png and code and I'll add it to the gallery!

@@ -12,9 +12,10 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='brokenaxes',
-    version='0.3',
+    version='0.4.1',
     description='Create broken axes',
     long_description=long_description,
+    long_description_content_type="text/markdown",
     author='Ben Dichter',
     author_email='ben.dichter@gmail.com',
     classifiers=[
