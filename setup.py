@@ -17,6 +17,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     author='Ben Dichter',
+    url='https://github.com/bendichter/brokenaxes',
     author_email='ben.dichter@gmail.com',
     classifiers=[
         'Development Status :: 3 - Alpha',
