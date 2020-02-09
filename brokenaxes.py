@@ -41,6 +41,10 @@ class BrokenAxes:
         {width, height}_ratios: (optional) | list of int
             The width/height ratios of the axes, passed to gridspec.GridSpec.
             By default, adapt the axes for a 1:1 scale given the ylims/xlims.
+        hspace: float
+            Height space between axes (NOTE: not horizontal space)
+        wspace: float
+            Widgth space between axes
         args, kwargs: (optional)
             Passed to gridspec.GridSpec
             
