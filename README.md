@@ -85,8 +85,6 @@ plt.show()
 
 ### Gallery
 
-* https://tm3.ghost.io/2020/04/15/using-brokenaxes-to-plot-discontinuous-time/
-
 If you make a plot with this tool that you are proud of, send me a png and code and I'll add it to the gallery!
 
 ### Life advice
