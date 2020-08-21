@@ -88,4 +88,4 @@ plt.show()
 If you make a plot with this tool that you are proud of, send me a png and code and I'll add it to the gallery!
 
 ### Life advice
-Please use this tool wisely. Any data visualization techique can be used to elucidate trends in the data, and can be used to manipulate and mislead. The latter is particularly true for broken axes plots, so please try to use them responsibly. Other than that, this software is free to use for any purpose.
+Please use this tool wisely. Any data visualization techique can be used to elucidate trends in the data, and can be used to manipulate and mislead. The latter is particularly true for broken axes plots, so please try to use them responsibly. Other than that, this software is free to use. See the license file for details.
