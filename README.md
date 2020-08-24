@@ -5,6 +5,7 @@
 brokenaxes makes matplotlib plots with breaks in the axes for showing data across a discontinuous range.
 
 [![PyPI](https://img.shields.io/pypi/v/brokenaxes.svg?style=plastic)](https://pypi.python.org/pypi/brokenaxes)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/brokenaxes.svg?color=purple&label=PyPi)](https://pypistats.org/packages/brokenaxes)
 
 ### Features
 * Break x and y axes.
