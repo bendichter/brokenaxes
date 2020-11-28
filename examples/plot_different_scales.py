@@ -23,7 +23,6 @@ def make_plot():
     y1 = np.sin(x)*100
     y2 = np.sin(x+np.pi)*5 + 90
     y3 = 30*np.exp(-x) - 50
-    y4 = 90 + (1-np.exp(6/x))
 
     bax = brokenaxes(
         ylims=[(-100, 0), (80, 100)],
@@ -35,7 +34,6 @@ def make_plot():
     bax.plot(x, y1, label="Big sin")
     bax.plot(x, y2, label="Small sin")
     bax.plot(x, y3, label="Exponential 1")
-    bax.plot(x, y4, '--', label="Exponential 2")
 
     bax.legend(loc="lower right")
     bax.set_title("Example for different scales for the x and y axis")

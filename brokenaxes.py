@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
-import matplotlib.ticker as ticker
+from matplotlib import gridspec
+from matplotlib import ticker
 from matplotlib import rcParams
 from datetime import timedelta
 
@@ -77,7 +77,7 @@ class BrokenAxes:
                 width_ratios = [1]
 
             # handle datetime xlims
-            if type(width_ratios[0]) == timedelta:
+            if isinstance(width_ratios[0], timedelta):
                 width_ratios = [tt.total_seconds() for tt in width_ratios]
 
         if height_ratios is None:
@@ -92,7 +92,7 @@ class BrokenAxes:
                 height_ratios = [1]
 
             # handle datetime ylims
-            if type(height_ratios[0]) == timedelta:
+            if isinstance(height_ratios[0], timedelta):
                 width_ratios = [tt.total_seconds() for tt in height_ratios]
 
         ncols, nrows = len(width_ratios), len(height_ratios)
@@ -140,8 +140,7 @@ class BrokenAxes:
         self.standardize_ticks()
         if d:
             self.draw_diags()
-        if despine:
-            self.set_spines()
+        self.set_spines()
 
     @staticmethod
     def draw_diag(ax, xpos, xlen, ypos, ylen, **kwargs):
@@ -319,6 +318,32 @@ class BrokenAxes:
     def axis(self, *args, **kwargs):
         [ax.axis(*args, **kwargs) for ax in self.axs]
 
+    def secondary_yaxis(self, functions=None, label=None, labelpad=30):
+        [ax.secondary_yaxis('right', functions=functions) for ax in self.axs if ax.is_last_col()]
+        secax = self.big_ax.secondary_yaxis('right', functions=functions)
+
+        secax.spines['right'].set_visible(False)
+        secax.set_yticks([])
+        secax.patch.set_facecolor('none')
+
+        if label is not None:
+            secax.set_ylabel(label, labelpad=labelpad)
+
+        return secax
+
+    def secondary_xaxis(self, functions=None, label=None, labelpad=30):
+        [ax.secondary_xaxis('top', functions=functions) for ax in self.axs if ax.is_first_row()]
+        secax = self.big_ax.secondary_xaxis('top', functions=functions)
+
+        secax.spines['top'].set_visible(False)
+        secax.set_xticks([])
+        secax.patch.set_facecolor('none')
+
+        if label is not None:
+            secax.set_xlabel(label, labelpad=labelpad)
+
+        return secax
+
 
 class CallCurator:
     """Used by BrokenAxes.__getattr__ to pass methods to internal axes."""
@@ -328,6 +353,24 @@ class CallCurator:
 
     def __call__(self, *args, **kwargs):
         return self.broken_axes.subax_call(self.method, args, kwargs)
+
+    def get_yaxis(self, *args, **kwargs):
+        return self.broken_axes.big_ax.get_yaxis(*args, **kwargs)
+
+    def get_shared_x_axes(self, *args, **kwargs):
+        return self.broken_axes.big_ax.get_shared_x_axes(*args, **kwargs)
+
+    def plot(self, *args, **kwargs):
+        return self.broken_axes.plot(*args, **kwargs)
+
+    def get_lines(self, *args, **kwargs):
+        return self.broken_axes.get_lines(*args, **kwargs)
+
+    def secondary_yaxis(self, *args, **kwargs):
+        return self.broken_axes.secondary_yaxis(*args, **kwargs)
+
+    def secondary_xaxis(self, *args, **kwargs):
+        return self.broken_axes.secondary_xaxis(*args, **kwargs)
 
 
 def brokenaxes(*args, **kwargs):
