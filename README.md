@@ -19,7 +19,7 @@ brokenaxes makes matplotlib plots with breaks in the axes for showing data acros
 * Supports log scales.
 
 ## Installation
-I recommend the [Anaconda python distribution](http://continuum.io/downloads) and this package is availably via pypi:
+I recommend the [Anaconda python distribution](http://continuum.io/downloads) and this package is available via pypi:
 ```
 pip install brokenaxes
 ```
