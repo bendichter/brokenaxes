@@ -84,6 +84,45 @@ plt.show()
 ```
 ![example3](https://raw.githubusercontent.com/bendichter/brokenaxes/master/example3.png)
 
+
+### datetime
+```python
+import matplotlib.pyplot as plt
+from brokenaxes import brokenaxes
+import numpy as np
+import datetime
+
+
+fig = plt.figure(figsize=(5, 5))
+xx = [datetime.datetime(2020, 1, x) for x in range(1, 20)]
+
+yy = np.arange(1, 20)
+
+bax = brokenaxes(
+    xlims=(
+        (
+            datetime.datetime(2020, 1, 1),
+            datetime.datetime(2020, 1, 3),
+        ),
+        (
+            datetime.datetime(2020, 1, 6),
+            datetime.datetime(2020, 1, 20),
+        )
+    )
+)
+
+bax.plot(xx, yy)
+fig.autofmt_xdate()
+
+[x.remove() for x in bax.diag_handles]
+bax.draw_diags()
+```
+
+![datetime_example](https://raw.githubusercontent.com/bendichter/brokenaxes/master/datetime_example.png)
+
+
+
+
 ### Gallery
 
 If you make a plot with this tool that you are proud of, send me a png and code and I'll add it to the gallery!

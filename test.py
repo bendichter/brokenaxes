@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from brokenaxes import brokenaxes
 import numpy as np
 from matplotlib.gridspec import GridSpec
+import datetime
 
 
 def test_standard():
@@ -41,3 +42,29 @@ def test_log():
     bax.grid(axis='both', which='minor', ls='--', alpha=0.4)
     bax.set_xlabel('x')
     bax.set_ylabel('y')
+
+
+def test_datetime():
+    fig = plt.figure(figsize=(5, 5))
+    xx = [datetime.datetime(2020, 1, x) for x in range(1, 20)]
+
+    yy = np.arange(1, 20)
+
+    bax = brokenaxes(
+        xlims=(
+            (
+                datetime.datetime(2020, 1, 1),
+                datetime.datetime(2020, 1, 3),
+            ),
+            (
+                datetime.datetime(2020, 1, 6),
+                datetime.datetime(2020, 1, 20),
+            )
+        )
+    )
+
+    bax.plot(xx, yy)
+    fig.autofmt_xdate()
+
+    [x.remove() for x in bax.diag_handles]
+    bax.draw_diags()
