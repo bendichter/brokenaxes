@@ -305,7 +305,6 @@ class BrokenAxes:
         return self.big_ax.set_xlabel(label, labelpad=labelpad, **kwargs)
 
     def set_ylabel(self, label, labelpad=30, **kwargs):
-        self.big_ax.xaxis.labelpad = labelpad
         return self.big_ax.set_ylabel(label, labelpad=labelpad, **kwargs)
 
     def set_title(self, *args, **kwargs):

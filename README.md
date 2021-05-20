@@ -19,7 +19,7 @@ brokenaxes makes matplotlib plots with breaks in the axes for showing data acros
 * Supports log scales.
 
 ## Installation
-I recommend the [Anaconda python distribution](http://continuum.io/downloads) and this package is availably via pypi:
+I recommend the [Anaconda python distribution](http://continuum.io/downloads) and this package is available via pypi:
 ```
 pip install brokenaxes
 ```
@@ -30,7 +30,7 @@ import matplotlib.pyplot as plt
 from brokenaxes import brokenaxes
 import numpy as np
 
-fig = plt.figure(figsize=(5,2))
+fig = plt.figure(figsize=(5, 2))
 bax = brokenaxes(xlims=((0, .1), (.4, .7)), ylims=((-1, .7), (.79, 1)), hspace=.05)
 x = np.linspace(0, 1, 100)
 bax.plot(x, np.sin(10 * x), label='sin')
@@ -50,7 +50,7 @@ import numpy as np
 
 sps1, sps2 = GridSpec(2,1)
 
-bax = brokenaxes(xlims=((.1, .3),(.7, .8)), subplot_spec=sps1)
+bax = brokenaxes(xlims=((.1, .3), (.7, .8)), subplot_spec=sps1)
 x = np.linspace(0, 1, 100)
 bax.plot(x, np.sin(x*30), ls=':', color='m')
 
@@ -67,7 +67,7 @@ import matplotlib.pyplot as plt
 from brokenaxes import brokenaxes
 import numpy as np
 
-fig = plt.figure(figsize=(5,5))
+fig = plt.figure(figsize=(5, 5))
 bax = brokenaxes(xlims=((1, 500), (600, 10000)),
 	     ylims=((1, 500), (600, 10000)),
 		 hspace=.15, xscale='log', yscale='log')
