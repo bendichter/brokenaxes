@@ -6,17 +6,29 @@ from datetime import timedelta
 
 import numpy as np
 
-__author__ = 'Ben Dichter'
+__author__ = "Ben Dichter"
 
 
 class BrokenAxes:
-    def __init__(self, xlims=None, ylims=None, d=.015, tilt=45,
-                 subplot_spec=None, fig=None, despine=True,
-                 xscale=None, yscale=None, diag_color='k',
-                 height_ratios=None, width_ratios=None,
-                 *args, **kwargs):
+    def __init__(
+        self,
+        xlims=None,
+        ylims=None,
+        d=0.015,
+        tilt=45,
+        subplot_spec=None,
+        fig=None,
+        despine=True,
+        xscale=None,
+        yscale=None,
+        diag_color="k",
+        height_ratios=None,
+        width_ratios=None,
+        *args,
+        **kwargs
+    ):
         """Creates a grid of axes that act like a single broken axes
-        
+
         Parameters
         ----------
         xlims, ylims: (optional) None or tuple of tuples, len 2
@@ -47,7 +59,7 @@ class BrokenAxes:
             Widgth space between axes
         args, kwargs: (optional)
             Passed to gridspec.GridSpec
-            
+
         Notes
         -----
         The broken axes effect is achieved by creating a number of smaller axes
@@ -69,7 +81,7 @@ class BrokenAxes:
         if width_ratios is None:
             if xlims:
                 # Check if the user has asked for a log scale on x axis
-                if xscale == 'log':
+                if xscale == "log":
                     width_ratios = [np.log(i[1]) - np.log(i[0]) for i in xlims]
                 else:
                     width_ratios = [i[1] - i[0] for i in xlims]
@@ -83,9 +95,8 @@ class BrokenAxes:
         if height_ratios is None:
             if ylims:
                 # Check if the user has asked for a log scale on y axis
-                if yscale == 'log':
-                    height_ratios = [np.log(i[1]) - np.log(i[0])
-                                     for i in ylims[::-1]]
+                if yscale == "log":
+                    height_ratios = [np.log(i[1]) - np.log(i[0]) for i in ylims[::-1]]
                 else:
                     height_ratios = [i[1] - i[0] for i in ylims[::-1]]
             else:
@@ -97,11 +108,16 @@ class BrokenAxes:
 
         ncols, nrows = len(width_ratios), len(height_ratios)
 
-        kwargs.update(ncols=ncols, nrows=nrows, height_ratios=height_ratios,
-                      width_ratios=width_ratios)
+        kwargs.update(
+            ncols=ncols,
+            nrows=nrows,
+            height_ratios=height_ratios,
+            width_ratios=width_ratios,
+        )
         if subplot_spec:
-            gs = gridspec.GridSpecFromSubplotSpec(subplot_spec=subplot_spec,
-                                                  *args, **kwargs)
+            gs = gridspec.GridSpecFromSubplotSpec(
+                subplot_spec=subplot_spec, *args, **kwargs
+            )
             self.big_ax = plt.Subplot(self.fig, subplot_spec)
         else:
             gs = gridspec.GridSpec(*args, **kwargs)
@@ -110,7 +126,7 @@ class BrokenAxes:
         [sp.set_visible(False) for sp in self.big_ax.spines.values()]
         self.big_ax.set_xticks([])
         self.big_ax.set_yticks([])
-        self.big_ax.patch.set_facecolor('none')
+        self.big_ax.patch.set_facecolor("none")
 
         self.axs = []
         for igs in gs:
@@ -132,7 +148,7 @@ class BrokenAxes:
         # and share x and y between them
         for i, ax in enumerate(self.axs):
             if ylims is not None:
-                ax.set_ylim(ylims[::-1][i//ncols])
+                ax.set_ylim(ylims[::-1][i // ncols])
                 ax.get_shared_y_axes().join(ax, self.first_col[i // ncols])
             if xlims is not None:
                 ax.set_xlim(xlims[i % ncols])
@@ -144,12 +160,11 @@ class BrokenAxes:
 
     @staticmethod
     def draw_diag(ax, xpos, xlen, ypos, ylen, **kwargs):
-        return ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen),
-                       **kwargs)
+        return ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen), **kwargs)
 
     def draw_diags(self):
         """
-        
+
         Parameters
         ----------
         d: float
@@ -160,8 +175,12 @@ class BrokenAxes:
         size = self.fig.get_size_inches()
         ylen = self.d * np.sin(self.tilt * np.pi / 180) * size[0] / size[1]
         xlen = self.d * np.cos(self.tilt * np.pi / 180)
-        d_kwargs = dict(transform=self.fig.transFigure, color=self.diag_color,
-                        clip_on=False, lw=rcParams['axes.linewidth'])
+        d_kwargs = dict(
+            transform=self.fig.transFigure,
+            color=self.diag_color,
+            clip_on=False,
+            lw=rcParams["axes.linewidth"],
+        )
 
         ds = []
         for ax in self.axs:
@@ -171,12 +190,10 @@ class BrokenAxes:
                 ypos = bounds[1]
                 if not ax.is_last_col():
                     xpos = bounds[0] + bounds[2]
-                    ds += self.draw_diag(ax, xpos, xlen, ypos, ylen,
-                                         **d_kwargs)
+                    ds += self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
                 if not ax.is_first_col():
                     xpos = bounds[0]
-                    ds += self.draw_diag(ax, xpos, xlen, ypos, ylen,
-                                         **d_kwargs)
+                    ds += self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
 
             if ax.is_first_col():
                 xpos = bounds[0]
@@ -192,51 +209,46 @@ class BrokenAxes:
                     ypos = bounds[1] + bounds[3]
                     if not ax.is_last_col():
                         xpos = bounds[0] + bounds[2]
-                        ds += self.draw_diag(ax, xpos, xlen, ypos, ylen,
-                                             **d_kwargs)
+                        ds += self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
                     if not ax.is_first_col():
                         xpos = bounds[0]
-                        ds += self.draw_diag(ax, xpos, xlen, ypos, ylen,
-                                             **d_kwargs)
+                        ds += self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
 
                 if ax.is_last_col():
                     xpos = bounds[0] + bounds[2]
                     if not ax.is_first_row():
                         ypos = bounds[1] + bounds[3]
-                        ds += self.draw_diag(ax, xpos, xlen, ypos, ylen,
-                                             **d_kwargs)
+                        ds += self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
                     if not ax.is_last_row():
                         ypos = bounds[1]
-                        ds += self.draw_diag(ax, xpos, xlen, ypos, ylen,
-                                             **d_kwargs)
+                        ds += self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
         self.diag_handles = ds
 
     def set_spines(self):
-        """Removes the spines of internal axes that are not boarder spines.
-        """
+        """Removes the spines of internal axes that are not boarder spines."""
         for ax in self.axs:
             ax.xaxis.tick_bottom()
             ax.yaxis.tick_left()
             if not ax.is_last_row():
-                ax.spines['bottom'].set_visible(False)
+                ax.spines["bottom"].set_visible(False)
                 plt.setp(ax.xaxis.get_minorticklabels(), visible=False)
                 plt.setp(ax.xaxis.get_minorticklines(), visible=False)
                 plt.setp(ax.xaxis.get_majorticklabels(), visible=False)
                 plt.setp(ax.xaxis.get_majorticklines(), visible=False)
             if self.despine or not ax.is_first_row():
-                ax.spines['top'].set_visible(False)
+                ax.spines["top"].set_visible(False)
             if not ax.is_first_col():
-                ax.spines['left'].set_visible(False)
+                ax.spines["left"].set_visible(False)
                 plt.setp(ax.yaxis.get_minorticklabels(), visible=False)
                 plt.setp(ax.yaxis.get_minorticklines(), visible=False)
                 plt.setp(ax.yaxis.get_majorticklabels(), visible=False)
                 plt.setp(ax.yaxis.get_majorticklines(), visible=False)
             if self.despine or not ax.is_last_col():
-                ax.spines['right'].set_visible(False)
+                ax.spines["right"].set_visible(False)
 
     def standardize_ticks(self, xbase=None, ybase=None):
         """Make all of the internal axes share tick bases
-        
+
         Parameters
         ----------
         xbase, ybase: (optional) None or float
@@ -245,52 +257,59 @@ class BrokenAxes:
             for that axis.
         """
         if xbase is None:
-            if self.axs[0].xaxis.get_scale() == 'log':
-                xbase = max(ax.xaxis.get_ticklocs()[1] /
-                            ax.xaxis.get_ticklocs()[0]
-                            for ax in self.axs if ax.is_last_row())
+            if self.axs[0].xaxis.get_scale() == "log":
+                xbase = max(
+                    ax.xaxis.get_ticklocs()[1] / ax.xaxis.get_ticklocs()[0]
+                    for ax in self.axs
+                    if ax.is_last_row()
+                )
             else:
-                xbase = max(ax.xaxis.get_ticklocs()[1] -
-                            ax.xaxis.get_ticklocs()[0]
-                            for ax in self.axs if ax.is_last_row())
+                xbase = max(
+                    ax.xaxis.get_ticklocs()[1] - ax.xaxis.get_ticklocs()[0]
+                    for ax in self.axs
+                    if ax.is_last_row()
+                )
         if ybase is None:
-            if self.axs[0].yaxis.get_scale() == 'log':
-                ybase = max(ax.yaxis.get_ticklocs()[1] /
-                            ax.yaxis.get_ticklocs()[0]
-                            for ax in self.axs if ax.is_first_col())
+            if self.axs[0].yaxis.get_scale() == "log":
+                ybase = max(
+                    ax.yaxis.get_ticklocs()[1] / ax.yaxis.get_ticklocs()[0]
+                    for ax in self.axs
+                    if ax.is_first_col()
+                )
             else:
-                ybase = max(ax.yaxis.get_ticklocs()[1] -
-                            ax.yaxis.get_ticklocs()[0]
-                            for ax in self.axs if ax.is_first_col())
+                ybase = max(
+                    ax.yaxis.get_ticklocs()[1] - ax.yaxis.get_ticklocs()[0]
+                    for ax in self.axs
+                    if ax.is_first_col()
+                )
 
         for ax in self.axs:
             if ax.is_first_col():
-                if ax.yaxis.get_scale() == 'log':
+                if ax.yaxis.get_scale() == "log":
                     ax.yaxis.set_major_locator(ticker.LogLocator(ybase))
                 else:
                     ax.yaxis.set_major_locator(ticker.MultipleLocator(ybase))
             if ax.is_last_row():
-                if ax.xaxis.get_scale() == 'log':
+                if ax.xaxis.get_scale() == "log":
                     ax.xaxis.set_major_locator(ticker.LogLocator(xbase))
                 else:
                     ax.xaxis.set_major_locator(ticker.MultipleLocator(xbase))
 
     def __getattr__(self, method):
         """Catch all methods that are not defined and pass to internal axes
-         (e.g. plot, errorbar, etc.).
+        (e.g. plot, errorbar, etc.).
         """
         return CallCurator(method, self)
 
     def subax_call(self, method, args, kwargs):
-        """Apply method call to all internal axes. Called by CallCurator.
-        """
+        """Apply method call to all internal axes. Called by CallCurator."""
         result = []
         for ax in self.axs:
-            if ax.xaxis.get_scale() == 'log':
+            if ax.xaxis.get_scale() == "log":
                 ax.xaxis.set_major_locator(ticker.LogLocator())
             else:
                 ax.xaxis.set_major_locator(ticker.AutoLocator())
-            if ax.yaxis.get_scale() == 'log':
+            if ax.yaxis.get_scale() == "log":
                 ax.yaxis.set_major_locator(ticker.LogLocator())
             else:
                 ax.yaxis.set_major_locator(ticker.AutoLocator())
@@ -318,12 +337,16 @@ class BrokenAxes:
         [ax.axis(*args, **kwargs) for ax in self.axs]
 
     def secondary_yaxis(self, functions=None, label=None, labelpad=30):
-        [ax.secondary_yaxis('right', functions=functions) for ax in self.axs if ax.is_last_col()]
-        secax = self.big_ax.secondary_yaxis('right', functions=functions)
+        [
+            ax.secondary_yaxis("right", functions=functions)
+            for ax in self.axs
+            if ax.is_last_col()
+        ]
+        secax = self.big_ax.secondary_yaxis("right", functions=functions)
 
-        secax.spines['right'].set_visible(False)
+        secax.spines["right"].set_visible(False)
         secax.set_yticks([])
-        secax.patch.set_facecolor('none')
+        secax.patch.set_facecolor("none")
 
         if label is not None:
             secax.set_ylabel(label, labelpad=labelpad)
@@ -331,12 +354,16 @@ class BrokenAxes:
         return secax
 
     def secondary_xaxis(self, functions=None, label=None, labelpad=30):
-        [ax.secondary_xaxis('top', functions=functions) for ax in self.axs if ax.is_first_row()]
-        secax = self.big_ax.secondary_xaxis('top', functions=functions)
+        [
+            ax.secondary_xaxis("top", functions=functions)
+            for ax in self.axs
+            if ax.is_first_row()
+        ]
+        secax = self.big_ax.secondary_xaxis("top", functions=functions)
 
-        secax.spines['top'].set_visible(False)
+        secax.spines["top"].set_visible(False)
         secax.set_xticks([])
-        secax.patch.set_facecolor('none')
+        secax.patch.set_facecolor("none")
 
         if label is not None:
             secax.set_xlabel(label, labelpad=labelpad)
@@ -346,6 +373,7 @@ class BrokenAxes:
 
 class CallCurator:
     """Used by BrokenAxes.__getattr__ to pass methods to internal axes."""
+
     def __init__(self, method, broken_axes):
         self.method = method
         self.broken_axes = broken_axes
@@ -374,11 +402,11 @@ class CallCurator:
 
 def brokenaxes(*args, **kwargs):
     """Convenience method for `BrokenAxes` class.
-    
+
     Parameters
     ----------
     args, kwargs: passed to `BrokenAxes()`
-    
+
     Returns
     -------
     out: `BrokenAxes`
