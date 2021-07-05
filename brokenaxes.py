@@ -329,9 +329,14 @@ class BrokenAxes:
     def set_title(self, *args, **kwargs):
         return self.big_ax.set_title(*args, **kwargs)
 
-    def legend(self, *args, **kwargs):
-        h, l = self.axs[0].get_legend_handles_labels()
-        return self.big_ax.legend(h, l, *args, **kwargs)
+    def legend(self, handles=None, labels=None, *args, **kwargs):
+        if handles is None or labels is None:
+            h, l = self.axs[0].get_legend_handles_labels()
+            if handles is None:
+                handles = h
+            if labels is None:
+                labels = l
+        return self.big_ax.legend(handles, labels, *args, **kwargs)
 
     def axis(self, *args, **kwargs):
         [ax.axis(*args, **kwargs) for ax in self.axs]
