@@ -330,8 +330,12 @@ class BrokenAxes:
         return self.big_ax.set_title(*args, **kwargs)
 
     def legend(self, *args, **kwargs):
-        h, l = self.axs[0].get_legend_handles_labels()
-        return self.big_ax.legend(h, l, *args, **kwargs)
+        handles, lables = self.axs[0].get_legend_handles_labels()
+        if 'handles' in kwargs:
+            handles = kwargs.pop('handles')
+        if 'labels' in kwargs:
+            labels = kwargs.pop('labels')
+        return self.big_ax.legend(handles, labels, *args, **kwargs)
 
     def axis(self, *args, **kwargs):
         [ax.axis(*args, **kwargs) for ax in self.axs]
