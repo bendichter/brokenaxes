@@ -375,6 +375,17 @@ class BrokenAxes:
 
         return secax
 
+    def text(self, x, y, s, *args, **kwargs):
+        # find axes that contains text
+        for ax in self.axs:
+            xlim = ax.get_xlim()
+            ylim = ax.get_ylim()
+            if xlim[0] < x < xlim[1] and ylim[0] < y < ylim[1]:
+                ax.text(x, y, s, *args, **kwargs)
+                return
+
+        raise ValueError('(x,y) coordinate of text not within any axes')
+
 
 class CallCurator:
     """Used by BrokenAxes.__getattr__ to pass methods to internal axes."""
