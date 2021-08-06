@@ -121,6 +121,8 @@ bax.draw_diags()
 ![datetime_example](https://raw.githubusercontent.com/bendichter/brokenaxes/master/datetime_example.png)
 
 
+## How do I do more?
+You can customize brokenaxes outside of the supported features listed above. Brokenaxes works by creating a number of smaller axes objects, with the positions and sizes of those axes dictated by the data ranges used in the constructor. Those individual axes are stored as a list in `bax.axs`. Most customizations will require accessing those inner axes objects. There is also a larger invisible axes object, `bax.big_ax`, which spans the entire brokenaxes region and is used for things like x and y axis labels.
 
 
 ### Gallery
