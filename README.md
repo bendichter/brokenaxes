@@ -92,7 +92,6 @@ from brokenaxes import brokenaxes
 import numpy as np
 import datetime
 
-
 fig = plt.figure(figsize=(5, 5))
 xx = [datetime.datetime(2020, 1, x) for x in range(1, 20)]
 
@@ -112,10 +111,14 @@ bax = brokenaxes(
 )
 
 bax.plot(xx, yy)
-fig.autofmt_xdate()
 
+fig.autofmt_xdate()
 [x.remove() for x in bax.diag_handles]
 bax.draw_diags()
+
+import matplotlib.dates as mdates
+for ax in bax.axs:
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%b-%d'))
 ```
 
 ![datetime_example](https://raw.githubusercontent.com/bendichter/brokenaxes/master/datetime_example.png)
