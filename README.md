@@ -125,11 +125,10 @@ for ax in bax.axs:
 
 
 ## How do I do more?
-You can customize brokenaxes outside of the supported features listed above. Brokenaxes works by creating a number of smaller axes objects, with the positions and sizes of those axes dictated by the data ranges used in the constructor. Those individual axes are stored as a list in `bax.axs`. Most customizations will require accessing those inner axes objects. There is also a larger invisible axes object, `bax.big_ax`, which spans the entire brokenaxes region and is used for things like x and y axis labels.
+You can customize brokenaxes outside of the supported features listed above. Brokenaxes works by creating a number of smaller axes objects, with the positions and sizes of those axes dictated by the data ranges used in the constructor. Those individual axes are stored as a list in `bax.axs`. Most customizations will require accessing those inner axes objects. (See the last two lines of [the datetime example](https://github.com/bendichter/brokenaxes#datetime)). There is also a larger invisible axes object, `bax.big_ax`, which spans the entire brokenaxes region and is used for things like x and y axis labels which span all of the smaller axes.
 
 
 ### Gallery
-
 If you make a plot with this tool that you are proud of, send me a png and code and I'll add it to the gallery!
 
 ### Life advice
