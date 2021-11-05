@@ -79,7 +79,7 @@ class BrokenAxes:
             self.fig = fig
 
         if width_ratios is None:
-            if xlims:
+            if xlims is not None:
                 # Check if the user has asked for a log scale on x axis
                 if xscale == "log":
                     width_ratios = [np.log(i[1]) - np.log(i[0]) for i in xlims]
@@ -93,7 +93,7 @@ class BrokenAxes:
                 width_ratios = [tt.total_seconds() for tt in width_ratios]
 
         if height_ratios is None:
-            if ylims:
+            if ylims is not None:
                 # Check if the user has asked for a log scale on y axis
                 if yscale == "log":
                     height_ratios = [np.log(i[1]) - np.log(i[0]) for i in ylims[::-1]]
