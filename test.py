@@ -101,3 +101,8 @@ def test_text_error():
     )
     with pytest.raises(ValueError):
         bax.text(-11, -11, "hello")
+
+
+def test_lims_arrays():
+    lims = np.arange(6).reshape((-1,2))
+    brokenaxes(xlims=lims, ylims=lims)
