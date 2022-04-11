@@ -295,6 +295,15 @@ class BrokenAxes:
                 else:
                     ax.xaxis.set_major_locator(ticker.MultipleLocator(xbase))
 
+    def fix_exponent(self):
+        for ax in self.axs:
+            subplotspec = ax.get_subplotspec()
+            if not (subplotspec.is_first_col() and subplotspec.is_first_row()):
+                ax.get_yaxis().get_offset_text().set_visible(False)
+            if not (subplotspec.is_last_col() and subplotspec.is_last_row()):
+                ax.get_xaxis().get_offset_text().set_visible(False)
+
+
     def __getattr__(self, method):
         """Catch all methods that are not defined and pass to internal axes
         (e.g. plot, errorbar, etc.).
@@ -317,6 +326,7 @@ class BrokenAxes:
 
         self.standardize_ticks()
         self.set_spines()
+        self.fix_exponent()
 
         return result
 
