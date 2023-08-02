@@ -4,9 +4,10 @@ import numpy as np
 from matplotlib.gridspec import GridSpec
 import datetime
 import pytest
+from matplotlib.testing.compare import compare_images
 
 
-def test_standard():
+def test_standard(tmp_path):
     fig = plt.figure(figsize=(5, 2))
     bax = brokenaxes(
         xlims=((0, 0.1), (0.4, 0.7)), ylims=((-1, 0.7), (0.79, 1)), hspace=0.05
@@ -18,8 +19,18 @@ def test_standard():
     bax.set_xlabel("time")
     bax.set_ylabel("value")
 
+    plot_name = "test_standard.png"
 
-def test_subplots():
+    #fig.savefig(f"test_images/{plot_name}")
+    fig.savefig(tmp_path / plot_name)
+
+    compare_images(f"test_images/{plot_name}", str(tmp_path / plot_name), tol=0.1)
+
+
+def test_subplots(tmp_path):
+
+    fig = plt.figure(figsize=(5, 5))
+
     sps1, sps2 = GridSpec(2, 1)
 
     bax = brokenaxes(xlims=((0.1, 0.3), (0.7, 0.8)), subplot_spec=sps1)
@@ -30,8 +41,15 @@ def test_subplots():
     bax = brokenaxes(xlims=((0, 2.5), (3, 6)), subplot_spec=sps2)
     bax.hist(x, histtype="bar")
 
+    plot_name = "test_subplots.png"
 
-def test_log():
+    #fig.savefig(f"test_images/{plot_name}")
+    fig.savefig(tmp_path / plot_name)
+
+    compare_images(f"test_images/{plot_name}", str(tmp_path / plot_name), tol=0.1)
+
+
+def test_log(tmp_path):
     fig = plt.figure(figsize=(5, 5))
     bax = brokenaxes(
         xlims=((1, 500), (600, 10000)),
@@ -50,8 +68,15 @@ def test_log():
     bax.set_xlabel("x")
     bax.set_ylabel("y")
 
+    plot_name = "test_log.png"
 
-def test_datetime():
+    # fig.savefig(f"test_images/{plot_name}")
+    fig.savefig(tmp_path / plot_name)
+
+    compare_images(f"test_images/{plot_name}", str(tmp_path / plot_name), tol=0.1)
+
+
+def test_datetime(tmp_path):
     fig = plt.figure(figsize=(5, 5))
     xx = [datetime.datetime(2020, 1, x) for x in range(1, 20)]
 
@@ -76,8 +101,15 @@ def test_datetime():
     [x.remove() for x in bax.diag_handles]
     bax.draw_diags()
 
+    plot_name = "test_datetime.png"
 
-def test_legend():
+    fig.savefig(f"test_images/{plot_name}")
+    fig.savefig(tmp_path / plot_name)
+
+    compare_images(f"test_images/{plot_name}", str(tmp_path / plot_name), tol=0.1)
+
+
+def test_legend(tmp_path):
     fig = plt.figure(figsize=(5, 2))
     bax = brokenaxes(
         xlims=((0, 0.1), (0.4, 0.7)), ylims=((-1, 0.7), (0.79, 1)), hspace=0.05
@@ -85,14 +117,30 @@ def test_legend():
     x = np.linspace(0, 1, 100)
     h1 = bax.plot(x, np.sin(10 * x), label="sin")
     h2 = bax.plot(x, np.cos(10 * x), label="cos")
-    bax.legend(handles=[h1, h2], labels=["1", "2"])
+    bax.legend(handles=[h1[0][0], h2[0][0]], labels=["1", "2"])
+
+    plot_name = "test_legend.png"
+
+    #fig.savefig(f"test_images/{plot_name}")
+    fig.savefig(tmp_path / plot_name)
+
+    compare_images(f"test_images/{plot_name}", str(tmp_path / plot_name), tol=0.1)
 
 
-def test_text():
+def test_text(tmp_path):
+    fig = plt.figure(figsize=(5, 5))
+
     bax = brokenaxes(
         xlims=((0, 0.1), (0.4, 0.7)), ylims=((-1, 0.7), (0.79, 1)), hspace=0.05
     )
     bax.text(0.5, 0.5, "hello")
+
+    plot_name = "test_test.png"
+
+    # fig.savefig(f"test_images/{plot_name}")
+    fig.savefig(tmp_path / plot_name)
+
+    compare_images(f"test_images/{plot_name}", str(tmp_path / plot_name), tol=0.1)
 
 
 def test_text_error():
@@ -104,5 +152,5 @@ def test_text_error():
 
 
 def test_lims_arrays():
-    lims = np.arange(6).reshape((-1,2))
+    lims = np.arange(6).reshape((-1, 2))
     brokenaxes(xlims=lims, ylims=lims)
