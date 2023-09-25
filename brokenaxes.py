@@ -149,10 +149,10 @@ class BrokenAxes:
         for i, ax in enumerate(self.axs):
             if ylims is not None:
                 ax.set_ylim(ylims[::-1][i // ncols])
-                ax.get_shared_y_axes().join(ax, self.first_col[i // ncols])
+                (self.first_col[i // ncols]).sharey(ax)
             if xlims is not None:
                 ax.set_xlim(xlims[i % ncols])
-                ax.get_shared_x_axes().join(ax, self.last_row[i % ncols])
+                (self.last_row[i % ncols]).sharex(ax)
         self.standardize_ticks()
         if d:
             self.draw_diags()
