@@ -27,84 +27,53 @@ class BrokenAxes:
         *args,
         **kwargs
     ):
-        """Creates a grid of axes that act like a single broken axes
+        """
+        Initializes a grid of axes that simulate a single broken axis.
 
         Parameters
         ----------
-        xlims, ylims: (optional) None or tuple of tuples, len 2
-            Define the ranges over which to plot. If `None`, the axis is left
-            unsplit.
-        d: (optional) double
-            Length of diagonal split mark used to indicate broken axes
-        tilt: (optional) double
-            Angle of diagonal split mark
-        subplot_spec: (optional) None or Gridspec.subplot_spec
-            Defines a subplot
-        fig: (optional) None or Figure
-            If no figure is defined, `plt.gcf()` is used
-        despine: (optional) bool
-            Get rid of right and top spines. Default: True
-        wspace, hspace: (optional) bool
-            Change the size of the horizontal or vertical gaps
-        xscale, yscale: (optional) None | str
-            None: linear axis (default), 'log': log axis
-        diag_color: (optional)
-            color of diagonal lines
-        {width, height}_ratios: (optional) | list of int
-            The width/height ratios of the axes, passed to gridspec.GridSpec.
-            By default, adapt the axes for a 1:1 scale given the ylims/xlims.
-        hspace: float
-            Height space between axes (NOTE: not horizontal space)
-        wspace: float
-            Widgth space between axes
-        args, kwargs: (optional)
-            Passed to gridspec.GridSpec
+        xlims : tuple of tuples, optional
+            X-axis limits for each subplot. If `None`, the x-axis is not broken.
+        ylims : tuple of tuples, optional
+            Y-axis limits for each subplot. If `None`, the y-axis is not broken.
+        d : float, default=0.015
+            Length of diagonal split mark used to indicate broken axes.
+        tilt : float, default=45
+            Angle of diagonal split mark.
+        subplot_spec : Gridspec.subplot_spec, optional
+            Defines a subplot. If `None`, a new subplot specification is created.
+        fig : Figure, optional
+            The figure object. If `None`, uses the current figure.
+        despine : bool, optional
+            If `True`, removes the right and top spines.
+        xscale : {'linear', 'log'}, optional
+            Scaling for the x-axis; 'log' or 'linear'.
+        yscale : {'linear', 'log'}, optional
+            Scaling for the y-axis; 'log' or 'linear'.
+        diag_color : str, optional
+            Color of the diagonal lines indicating breaks, default is 'k'.
+        height_ratios : list of int, optional
+            Height ratios of the subplots. If `None`, the height ratios are determined
+            using the `ylims` parameter.
+        width_ratios : list of int, optional
+            Width ratios of the subplots. If `None`, the width ratios are determined
+            using the `xlims` parameter.
 
         Notes
         -----
-        The broken axes effect is achieved by creating a number of smaller axes
-        and setting their position and data ranges. A "big_ax" is used for
-        methods that need the position of the entire broken axes object, e.g.
-        `set_xlabel`.
+        This class facilitates creating plots with discontinuities in either the x or y axis,
+        by arranging multiple subplots as a single cohesive plot with clear visual indicators
+        for the discontinuities.
         """
 
         self.diag_color = diag_color
         self.despine = despine
         self.d = d
         self.tilt = tilt
+        self.fig = fig if fig is not None else plt.gcf()
 
-        if fig is None:
-            self.fig = plt.gcf()
-        else:
-            self.fig = fig
-
-        if width_ratios is None:
-            if xlims is not None:
-                # Check if the user has asked for a log scale on x axis
-                if xscale == "log":
-                    width_ratios = [np.log(i[1]) - np.log(i[0]) for i in xlims]
-                else:
-                    width_ratios = [i[1] - i[0] for i in xlims]
-            else:
-                width_ratios = [1]
-
-            # handle datetime xlims
-            if isinstance(width_ratios[0], timedelta):
-                width_ratios = [tt.total_seconds() for tt in width_ratios]
-
-        if height_ratios is None:
-            if ylims is not None:
-                # Check if the user has asked for a log scale on y axis
-                if yscale == "log":
-                    height_ratios = [np.log(i[1]) - np.log(i[0]) for i in ylims[::-1]]
-                else:
-                    height_ratios = [i[1] - i[0] for i in ylims[::-1]]
-            else:
-                height_ratios = [1]
-
-            # handle datetime ylims
-            if isinstance(height_ratios[0], timedelta):
-                height_ratios = [tt.total_seconds() for tt in height_ratios]
+        width_ratios = width_ratios if width_ratios is not None else self._calculate_ratios(xlims, xscale)
+        height_ratios = height_ratios if height_ratios is not None else self._calculate_ratios(ylims, yscale)
 
         ncols, nrows = len(width_ratios), len(height_ratios)
 
@@ -158,6 +127,31 @@ class BrokenAxes:
             self.draw_diags()
         self.set_spines()
         self.diag_handles = []
+
+    def _calculate_ratios(self, lims, scale):
+        """
+        Calculate width or height ratios based on axis limits and scale.
+
+        Parameters
+        ----------
+        lims : tuple of tuples
+            Axis limits for each subplot.
+        scale : str
+            Scaling for the axis ('linear' or 'log').
+        """
+        if lims is None:
+            return [1]
+
+        if scale == "log":
+            ratios = [np.log(i[1]) - np.log(i[0]) for i in lims]
+        else:
+            ratios = [i[1] - i[0] for i in lims]
+
+        # handle datetime xlims
+        if isinstance(ratios[0], timedelta):
+            ratios = [tt.total_seconds() for tt in ratios]
+
+        return ratios
 
     @staticmethod
     def draw_diag(ax, xpos, xlen, ypos, ylen, **kwargs):
@@ -419,13 +413,12 @@ class BrokenAxes:
         return secax
 
     def text(self, x, y, s, *args, **kwargs):
-        # find axes that contains text
+        # find axes object that should contain text
         for ax in self.axs:
             xlim = ax.get_xlim()
             ylim = ax.get_ylim()
             if xlim[0] < x < xlim[1] and ylim[0] < y < ylim[1]:
-                ax.text(x, y, s, *args, **kwargs)
-                return
+                return ax.text(x, y, s, *args, **kwargs)
 
         raise ValueError("(x,y) coordinate of text not within any axes")
 
