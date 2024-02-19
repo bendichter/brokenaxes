@@ -20,7 +20,7 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Test with pytest
         run: |
-          pytest --cov=brokenaxes.py --cov-report=xml test.py
+          pytest --cov=brokenaxes --cov-report=xml test.py
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
