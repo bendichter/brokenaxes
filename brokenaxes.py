@@ -320,6 +320,9 @@ class BrokenAxes:
             "get_second_yaxis",
             "get_second_xaxis",
             "get_legend",
+            "get_title",
+            "get_xlabel",
+            "get_ylabel",
         ]:
             return getattr(self.big_ax, method)
 
@@ -362,9 +365,6 @@ class BrokenAxes:
             if labels is None:
                 labels = l
         return self.big_ax.legend(handles=handles, labels=labels, *args, **kwargs)
-
-    def axis(self, *args, **kwargs):
-        [ax.axis(*args, **kwargs) for ax in self.axs]
 
     def secondary_yaxis(
         self, location="right", functions=None, label=None, labelpad=30

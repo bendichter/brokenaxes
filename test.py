@@ -181,3 +181,11 @@ def test_get_axis_special():
     assert isinstance(bax.get_shared_x_axes(), mpl.cbook.GrouperView)
     assert isinstance(bax.get_xaxis(), mpl.axis.XAxis)
     assert isinstance(bax.get_shared_y_axes(), mpl.cbook.GrouperView)
+
+
+def test_draw_diags():
+    fig = plt.figure(figsize=(5, 2))
+    bax = brokenaxes(
+        xlims=((0, 0.1), (0.4, 0.7)), ylims=((-1, 0.7), (0.79, 1)), hspace=0.05
+    )
+    bax.draw_diags(tilt=90, d=.05)
