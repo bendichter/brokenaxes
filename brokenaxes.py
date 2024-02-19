@@ -73,7 +73,7 @@ class BrokenAxes:
         self.fig = fig if fig is not None else plt.gcf()
 
         width_ratios = width_ratios if width_ratios is not None else self._calculate_ratios(xlims, xscale)
-        height_ratios = height_ratios if height_ratios is not None else self._calculate_ratios(ylims, yscale)
+        height_ratios = height_ratios if height_ratios is not None else self._calculate_ratios(ylims, yscale)[::-1]
 
         ncols, nrows = len(width_ratios), len(height_ratios)
 
