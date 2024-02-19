@@ -20,12 +20,8 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Test with pytest
         run: |
-          pytest --cov=brokenaxes.py --cov-report=xml test.py
+          pytest --cov=brokenaxes --cov-report=xml test.py
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
-        with:
-          file: .github/workflows/codecov.yml
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: true
-          token: ${{ secrets.CODECOV_TOKEN }}
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
