@@ -6,6 +6,7 @@ brokenaxes makes matplotlib plots with breaks in the axes for showing data acros
 
 [![PyPI](https://img.shields.io/pypi/v/brokenaxes.svg?style=plastic)](https://pypi.python.org/pypi/brokenaxes)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/brokenaxes.svg?color=purple&label=PyPi)](https://pypistats.org/packages/brokenaxes)
+[![codecov](https://codecov.io/gh/bendichter/brokenaxes/graph/badge.svg?token=emsyOdN4YD)](https://codecov.io/gh/bendichter/brokenaxes)
 
 ### Features
 * Break x and y axes.
