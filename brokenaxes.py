@@ -154,7 +154,7 @@ class BrokenAxes:
         return ratios
 
     @staticmethod
-    def draw_diag(ax, xpos, xlen, ypos, ylen, **kwargs):
+    def draw_diag(ax, xpos, ypos, xlen, ylen, **kwargs):
         return ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen), **kwargs)
 
     def draw_diags(self, d=None, tilt=None):
@@ -172,13 +172,14 @@ class BrokenAxes:
         if tilt is not None:
             self.tilt = tilt
         size = self.fig.get_size_inches()
-        ylen = self.d * np.sin(self.tilt * np.pi / 180) * size[0] / size[1]
-        xlen = self.d * np.cos(self.tilt * np.pi / 180)
+
         d_kwargs = dict(
             transform=self.fig.transFigure,
             color=self.diag_color,
             clip_on=False,
             lw=rcParams["axes.linewidth"],
+            ylen=self.d * np.sin(self.tilt * np.pi / 180) * size[0] / size[1],
+            xlen=self.d * np.cos(self.tilt * np.pi / 180)
         )
 
         ds = []
@@ -189,38 +190,38 @@ class BrokenAxes:
                 ypos = bounds[1]
                 if not ax.get_subplotspec().is_last_col():
                     xpos = bounds[0] + bounds[2]
-                    ds += self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
+                    ds += self.draw_diag(ax, xpos, ypos, **d_kwargs)
                 if not ax.get_subplotspec().is_first_col():
                     xpos = bounds[0]
-                    ds += self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
+                    ds += self.draw_diag(ax, xpos, ypos, **d_kwargs)
 
             if ax.get_subplotspec().is_first_col():
                 xpos = bounds[0]
                 if not ax.get_subplotspec().is_first_row():
                     ypos = bounds[1] + bounds[3]
-                    ds += self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
+                    ds += self.draw_diag(ax, xpos, ypos, **d_kwargs)
                 if not ax.get_subplotspec().is_last_row():
                     ypos = bounds[1]
-                    ds += self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
+                    ds += self.draw_diag(ax, xpos, ypos, **d_kwargs)
 
             if not self.despine:
                 if ax.get_subplotspec().is_first_row():
                     ypos = bounds[1] + bounds[3]
                     if not ax.get_subplotspec().is_last_col():
                         xpos = bounds[0] + bounds[2]
-                        ds += self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
+                        ds += self.draw_diag(ax, xpos, ypos, **d_kwargs)
                     if not ax.get_subplotspec().is_first_col():
                         xpos = bounds[0]
-                        ds += self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
+                        ds += self.draw_diag(ax, xpos, ypos, **d_kwargs)
 
                 if ax.get_subplotspec().is_last_col():
                     xpos = bounds[0] + bounds[2]
                     if not ax.get_subplotspec().is_first_row():
                         ypos = bounds[1] + bounds[3]
-                        ds += self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
+                        ds += self.draw_diag(ax, xpos, ypos, **d_kwargs)
                     if not ax.get_subplotspec().is_last_row():
                         ypos = bounds[1]
-                        ds += self.draw_diag(ax, xpos, xlen, ypos, ylen, **d_kwargs)
+                        ds += self.draw_diag(ax, xpos, ypos, **d_kwargs)
         self.diag_handles = ds
 
     def set_spines(self):
@@ -228,21 +229,22 @@ class BrokenAxes:
         for ax in self.axs:
             ax.xaxis.tick_bottom()
             ax.yaxis.tick_left()
-            if not ax.get_subplotspec().is_last_row():
+            subplotspec = ax.get_subplotspec()
+            if not subplotspec.is_last_row():
                 ax.spines["bottom"].set_visible(False)
                 plt.setp(ax.xaxis.get_minorticklabels(), visible=False)
                 plt.setp(ax.xaxis.get_minorticklines(), visible=False)
                 plt.setp(ax.xaxis.get_majorticklabels(), visible=False)
                 plt.setp(ax.xaxis.get_majorticklines(), visible=False)
-            if self.despine or not ax.get_subplotspec().is_first_row():
+            if self.despine or not subplotspec.is_first_row():
                 ax.spines["top"].set_visible(False)
-            if not ax.get_subplotspec().is_first_col():
+            if not subplotspec.is_first_col():
                 ax.spines["left"].set_visible(False)
                 plt.setp(ax.yaxis.get_minorticklabels(), visible=False)
                 plt.setp(ax.yaxis.get_minorticklines(), visible=False)
                 plt.setp(ax.yaxis.get_majorticklabels(), visible=False)
                 plt.setp(ax.yaxis.get_majorticklines(), visible=False)
-            if self.despine or not ax.get_subplotspec().is_last_col():
+            if self.despine or not subplotspec.is_last_col():
                 ax.spines["right"].set_visible(False)
 
     def standardize_ticks(self, xbase=None, ybase=None):
