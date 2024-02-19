@@ -165,10 +165,10 @@ def test_secondary_axes():
     bax = brokenaxes(
         xlims=((0, 0.1), (0.4, 0.7)), ylims=((-1, 0.7), (0.79, 1)), hspace=0.05
     )
-    bax.secondary_xaxis("top")
+    bax.secondary_xaxis("top", label="top")
     print(type(isinstance(bax.secondary_xaxis(), mpl.axis.XAxis)))
     bax.secondary_xaxis("bottom")
-    bax.secondary_yaxis("left")
+    bax.secondary_yaxis("left", label="left")
     bax.secondary_yaxis("right")
 
 

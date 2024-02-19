@@ -157,12 +157,13 @@ class BrokenAxes:
         if d:
             self.draw_diags()
         self.set_spines()
+        self.diag_handles = []
 
     @staticmethod
     def draw_diag(ax, xpos, xlen, ypos, ylen, **kwargs):
         return ax.plot((xpos - xlen, xpos + xlen), (ypos - ylen, ypos + ylen), **kwargs)
 
-    def draw_diags(self):
+    def draw_diags(self, d=None, tilt=None):
         """
 
         Parameters
@@ -172,6 +173,10 @@ class BrokenAxes:
         tilt: float
             Angle of diagonal split mark
         """
+        if d is not None:
+            self.d = d
+        if tilt is not None:
+            self.tilt = tilt
         size = self.fig.get_size_inches()
         ylen = self.d * np.sin(self.tilt * np.pi / 180) * size[0] / size[1]
         xlen = self.d * np.cos(self.tilt * np.pi / 180)
@@ -361,7 +366,9 @@ class BrokenAxes:
     def axis(self, *args, **kwargs):
         [ax.axis(*args, **kwargs) for ax in self.axs]
 
-    def secondary_yaxis(self, location="right", functions=None, label=None, labelpad=30):
+    def secondary_yaxis(
+        self, location="right", functions=None, label=None, labelpad=30
+    ):
         assert location in ["right", "left"], "location must be 'right' or 'left'"
         if location == "right":
             [
@@ -420,7 +427,7 @@ class BrokenAxes:
                 ax.text(x, y, s, *args, **kwargs)
                 return
 
-        raise ValueError('(x,y) coordinate of text not within any axes')
+        raise ValueError("(x,y) coordinate of text not within any axes")
 
 
 def brokenaxes(*args, **kwargs):
