@@ -1,9 +1,12 @@
-import matplotlib.pyplot as plt
-from brokenaxes import brokenaxes
-import numpy as np
-from matplotlib.gridspec import GridSpec
 import datetime
+
+import matplotlib.pyplot as plt
+import numpy as np
 import pytest
+from matplotlib.gridspec import GridSpec
+import matplotlib as mpl
+
+from brokenaxes import brokenaxes
 
 
 def test_standard():
@@ -67,13 +70,37 @@ def test_datetime():
                 datetime.datetime(2020, 1, 6),
                 datetime.datetime(2020, 1, 20),
             ),
-        )
+        ),
     )
 
     bax.plot(xx, yy)
     fig.autofmt_xdate()
 
     [x.remove() for x in bax.diag_handles]
+    bax.draw_diags()
+
+
+def test_datetime_y():
+    fig = plt.figure(figsize=(5, 5))
+    yy = [datetime.datetime(2020, 1, x) for x in range(1, 20)]
+
+    xx = np.arange(1, 20)
+
+    bax = brokenaxes(
+        ylims=(
+            (
+                datetime.datetime(2020, 1, 1),
+                datetime.datetime(2020, 1, 3),
+            ),
+            (
+                datetime.datetime(2020, 1, 6),
+                datetime.datetime(2020, 1, 20),
+            ),
+        )
+    )
+
+    bax.plot(xx, yy)
+
     bax.draw_diags()
 
 
@@ -85,7 +112,7 @@ def test_legend():
     x = np.linspace(0, 1, 100)
     h1 = bax.plot(x, np.sin(10 * x), label="sin")
     h2 = bax.plot(x, np.cos(10 * x), label="cos")
-    bax.legend(handles=[h1, h2], labels=["1", "2"])
+    bax.legend(handles=[h1[0][0], h2[0][0]], labels=["1", "2"])
 
 
 def test_text():
@@ -106,3 +133,51 @@ def test_text_error():
 def test_lims_arrays():
     lims = np.arange(6).reshape((-1,2))
     brokenaxes(xlims=lims, ylims=lims)
+
+
+def test_pass_fig():
+    fig = plt.figure(figsize=(5, 2))
+    bax = brokenaxes(
+        xlims=((0, 0.1), (0.4, 0.7)), ylims=((-1, 0.7), (0.79, 1)), hspace=0.05, fig=fig
+    )
+    assert bax.fig is fig
+
+
+def test_despine():
+    fig = plt.figure(figsize=(5, 2))
+    bax = brokenaxes(
+        xlims=((0, 0.1), (0.4, 0.7)), ylims=((-1, 0.7), (0.79, 1)), hspace=0.05, despine=False,
+    )
+    assert bax.despine is False
+
+
+def test_set_title():
+    fig = plt.figure(figsize=(5, 2))
+    bax = brokenaxes(
+        xlims=((0, 0.1), (0.4, 0.7)), ylims=((-1, 0.7), (0.79, 1)), hspace=0.05
+    )
+    bax.set_title("title")
+
+
+def test_secondary_axes():
+
+    fig = plt.figure(figsize=(5, 2))
+    bax = brokenaxes(
+        xlims=((0, 0.1), (0.4, 0.7)), ylims=((-1, 0.7), (0.79, 1)), hspace=0.05
+    )
+    bax.secondary_xaxis("top")
+    print(type(isinstance(bax.secondary_xaxis(), mpl.axis.XAxis)))
+    bax.secondary_xaxis("bottom")
+    bax.secondary_yaxis("left")
+    bax.secondary_yaxis("right")
+
+
+def test_get_axis_special():
+    fig = plt.figure(figsize=(5, 2))
+    bax = brokenaxes(
+        xlims=((0, 0.1), (0.4, 0.7)), ylims=((-1, 0.7), (0.79, 1)), hspace=0.05
+    )
+    assert isinstance(bax.get_yaxis(), mpl.axis.YAxis)
+    assert isinstance(bax.get_shared_x_axes(), mpl.cbook.GrouperView)
+    assert isinstance(bax.get_xaxis(), mpl.axis.XAxis)
+    assert isinstance(bax.get_shared_y_axes(), mpl.cbook.GrouperView)

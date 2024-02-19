@@ -1,10 +1,10 @@
-import matplotlib.pyplot as plt
-from matplotlib import gridspec
-from matplotlib import ticker
-from matplotlib import rcParams
 from datetime import timedelta
 
+import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib import gridspec
+from matplotlib import rcParams
+from matplotlib import ticker
 
 __author__ = "Ben Dichter"
 
@@ -104,7 +104,7 @@ class BrokenAxes:
 
             # handle datetime ylims
             if isinstance(height_ratios[0], timedelta):
-                width_ratios = [tt.total_seconds() for tt in height_ratios]
+                height_ratios = [tt.total_seconds() for tt in height_ratios]
 
         ncols, nrows = len(width_ratios), len(height_ratios)
 
@@ -303,12 +303,22 @@ class BrokenAxes:
             if not (subplotspec.is_last_col() and subplotspec.is_last_row()):
                 ax.get_xaxis().get_offset_text().set_visible(False)
 
-
     def __getattr__(self, method):
         """Catch all methods that are not defined and pass to internal axes
         (e.g. plot, errorbar, etc.).
         """
-        return CallCurator(method, self)
+        if method in [
+            "get_yaxis",
+            "get_xaxis",
+            "get_shared_x_axes",
+            "get_shared_y_axes",
+            "get_second_yaxis",
+            "get_second_xaxis",
+            "get_legend",
+        ]:
+            return getattr(self.big_ax, method)
+
+        return lambda *args, **kwargs: self.subax_call(method, args, kwargs)
 
     def subax_call(self, method, args, kwargs):
         """Apply method call to all internal axes. Called by CallCurator."""
@@ -346,20 +356,28 @@ class BrokenAxes:
                 handles = h
             if labels is None:
                 labels = l
-        return self.big_ax.legend(handles, labels, *args, **kwargs)
+        return self.big_ax.legend(handles=handles, labels=labels, *args, **kwargs)
 
     def axis(self, *args, **kwargs):
         [ax.axis(*args, **kwargs) for ax in self.axs]
 
-    def secondary_yaxis(self, functions=None, label=None, labelpad=30):
-        [
-            ax.secondary_yaxis("right", functions=functions)
-            for ax in self.axs
-            if ax.get_subplotspec().is_last_col()
-        ]
-        secax = self.big_ax.secondary_yaxis("right", functions=functions)
+    def secondary_yaxis(self, location="right", functions=None, label=None, labelpad=30):
+        assert location in ["right", "left"], "location must be 'right' or 'left'"
+        if location == "right":
+            [
+                ax.secondary_yaxis("right", functions=functions)
+                for ax in self.axs
+                if ax.get_subplotspec().is_last_col()
+            ]
+        else:
+            [
+                ax.secondary_yaxis("left", functions=functions)
+                for ax in self.axs
+                if ax.get_subplotspec().is_first_col()
+            ]
+        secax = self.big_ax.secondary_yaxis(location, functions=functions)
 
-        secax.spines["right"].set_visible(False)
+        secax.spines[location].set_visible(False)
         secax.set_yticks([])
         secax.patch.set_facecolor("none")
 
@@ -368,15 +386,23 @@ class BrokenAxes:
 
         return secax
 
-    def secondary_xaxis(self, functions=None, label=None, labelpad=30):
-        [
-            ax.secondary_xaxis("top", functions=functions)
-            for ax in self.axs
-            if ax.get_subplotspec().is_first_row()
-        ]
-        secax = self.big_ax.secondary_xaxis("top", functions=functions)
+    def secondary_xaxis(self, location="top", functions=None, label=None, labelpad=30):
+        assert location in ["top", "bottom"], "location must be 'top' or 'bottom'"
+        if location == "top":
+            [
+                ax.secondary_xaxis("top", functions=functions)
+                for ax in self.axs
+                if ax.get_subplotspec().is_first_row()
+            ]
+        else:
+            [
+                ax.secondary_xaxis("bottom", functions=functions)
+                for ax in self.axs
+                if ax.get_subplotspec().is_last_row()
+            ]
+        secax = self.big_ax.secondary_xaxis(location, functions=functions)
 
-        secax.spines["top"].set_visible(False)
+        secax.spines[location].set_visible(False)
         secax.set_xticks([])
         secax.patch.set_facecolor("none")
 
@@ -395,35 +421,6 @@ class BrokenAxes:
                 return
 
         raise ValueError('(x,y) coordinate of text not within any axes')
-
-
-class CallCurator:
-    """Used by BrokenAxes.__getattr__ to pass methods to internal axes."""
-
-    def __init__(self, method, broken_axes):
-        self.method = method
-        self.broken_axes = broken_axes
-
-    def __call__(self, *args, **kwargs):
-        return self.broken_axes.subax_call(self.method, args, kwargs)
-
-    def get_yaxis(self, *args, **kwargs):
-        return self.broken_axes.big_ax.get_yaxis(*args, **kwargs)
-
-    def get_shared_x_axes(self, *args, **kwargs):
-        return self.broken_axes.big_ax.get_shared_x_axes(*args, **kwargs)
-
-    def plot(self, *args, **kwargs):
-        return self.broken_axes.plot(*args, **kwargs)
-
-    def get_lines(self, *args, **kwargs):
-        return self.broken_axes.get_lines(*args, **kwargs)
-
-    def secondary_yaxis(self, *args, **kwargs):
-        return self.broken_axes.secondary_yaxis(*args, **kwargs)
-
-    def secondary_xaxis(self, *args, **kwargs):
-        return self.broken_axes.secondary_xaxis(*args, **kwargs)
 
 
 def brokenaxes(*args, **kwargs):
