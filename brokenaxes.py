@@ -1,4 +1,5 @@
 from datetime import timedelta
+from typing import Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -423,6 +424,30 @@ class BrokenAxes:
                 return ax.text(x, y, s, *args, **kwargs)
 
         raise ValueError("(x,y) coordinate of text not within any axes")
+
+    def get_spines(self, direction: Optional[str] = None):
+        if direction not in ["top", "right", "bottom", "left", None]:
+            raise ValueError("direction must be one of 'top', 'right', 'bottom', or 'left'")
+        if direction is None:
+            return {
+                "top": self.get_spines("top"),
+                "right": self.get_spines("right"),
+                "bottom": self.get_spines("bottom"),
+                "left": self.get_spines("left"),
+            }
+        if direction == "top":
+            return [ax.spines[direction] for ax in self.axs if ax.get_subplotspec().is_first_row()]
+        elif direction == "right":
+            return [ax.spines[direction] for ax in self.axs if ax.get_subplotspec().is_last_col()]
+        elif direction == "bottom":
+            return [ax.spines[direction] for ax in self.axs if ax.get_subplotspec().is_last_row()]
+        elif direction == "left":
+            return [ax.spines[direction] for ax in self.axs if ax.get_subplotspec().is_first_col()]
+
+    @property
+    def spines(self):
+        return self.get_spines()
+
 
 
 def brokenaxes(*args, **kwargs):
