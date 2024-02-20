@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 # To use a consistent encoding
 from codecs import open
 from os import path
@@ -24,14 +24,14 @@ setup(
         'Topic :: Scientific/Engineering',
         'Framework :: Matplotlib',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7'
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
     ],
 
     keywords='data visualization',
-
-    #packages=find_packages(exclude=['docs']),
     py_modules=["brokenaxes"],
 
     # List run-time dependencies here.  These will be installed by pip when
@@ -43,10 +43,9 @@ setup(
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
     # for example:
-    # $ pip install -e .[dev,test]
+    # $ pip install -e .[test]
     extras_require={
-    #    'dev': ['check-manifest'],
-        'test': ['pytest'],
+        'test': ['pytest>=6.0', 'pytest-cov', 'pytest-mpl'],
     },
 
 
