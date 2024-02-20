@@ -1,0 +1,3 @@
+pytest>=6.0
+pytest-mpl==0.17.0
+pytest-cov
