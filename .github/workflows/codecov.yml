@@ -1,6 +1,6 @@
 name: Python application cross-platform test
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   build:
