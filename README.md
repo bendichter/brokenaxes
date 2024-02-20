@@ -138,3 +138,12 @@ If you make a plot with this tool that you are proud of, send me a png and code 
 
 ### Life advice
 Please use this tool wisely. Any data visualization techique can be used to elucidate trends in the data, but can also be used to manipulate and mislead. The latter is particularly true for broken axes plots, so please try to use them responsibly. Other than that, this software is free to use. See the license file for details.
+
+## Testing
+brokenaxes uses `pytest-mpl` to ensure that the plots are created correctly.
+
+To test that the plots are created correctly, run `pytest --mpl --mpl-baseline-path test_baseline test.py` from the root directory.
+
+To generate new test plots, run `pytest --mpl-generate-path tests_baseline test.py` from the root directory.
+
+If you are running the tests on a headless server, you may need to set the MPLBACKEND environment variable to Agg.
