@@ -1,4 +1,5 @@
 from datetime import timedelta
+from typing import Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -66,6 +67,7 @@ class BrokenAxes:
         for the discontinuities.
         """
 
+        self._spines = None
         self.diag_color = diag_color
         self.despine = despine
         self.d = d
@@ -423,6 +425,17 @@ class BrokenAxes:
                 return ax.text(x, y, s, *args, **kwargs)
 
         raise ValueError("(x,y) coordinate of text not within any axes")
+
+    @property
+    def spines(self):
+        if self._spines is None:
+            self._spines = dict(
+                top=[ax.spines["top"] for ax in self.axs if ax.get_subplotspec().is_first_row()],
+                right=[ax.spines["right"] for ax in self.axs if ax.get_subplotspec().is_last_col()],
+                bottom=[ax.spines["bottom"] for ax in self.axs if ax.get_subplotspec().is_last_row()],
+                left=[ax.spines["left"] for ax in self.axs if ax.get_subplotspec().is_first_col()],
+            )
+        return self._spines
 
 
 def brokenaxes(*args, **kwargs):

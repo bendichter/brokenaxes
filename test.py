@@ -213,6 +213,18 @@ def test_draw_diags():
     return fig
 
 
+@pytest.mark.mpl_image_compare
+def test_set_spine_prop():
+    fig = plt.figure(figsize=(5, 2))
+    bax = brokenaxes(
+        xlims=((0, 0.1), (0.4, 0.7)), ylims=((-1, 0.7), (0.79, 1)), hspace=0.05
+    )
+
+    [x.set_linewidth(2) for x in bax.spines["bottom"]]
+
+    return fig
+
+
 def test_get_axis_special():
     fig = plt.figure(figsize=(5, 2))
     bax = brokenaxes(
