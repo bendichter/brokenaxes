@@ -67,6 +67,7 @@ class BrokenAxes:
         for the discontinuities.
         """
 
+        self._spines = None
         self.diag_color = diag_color
         self.despine = despine
         self.d = d
@@ -425,29 +426,16 @@ class BrokenAxes:
 
         raise ValueError("(x,y) coordinate of text not within any axes")
 
-    def get_spines(self, direction: Optional[str] = None):
-        if direction not in ["top", "right", "bottom", "left", None]:
-            raise ValueError("direction must be one of 'top', 'right', 'bottom', or 'left'")
-        if direction is None:
-            return {
-                "top": self.get_spines("top"),
-                "right": self.get_spines("right"),
-                "bottom": self.get_spines("bottom"),
-                "left": self.get_spines("left"),
-            }
-        if direction == "top":
-            return [ax.spines[direction] for ax in self.axs if ax.get_subplotspec().is_first_row()]
-        elif direction == "right":
-            return [ax.spines[direction] for ax in self.axs if ax.get_subplotspec().is_last_col()]
-        elif direction == "bottom":
-            return [ax.spines[direction] for ax in self.axs if ax.get_subplotspec().is_last_row()]
-        elif direction == "left":
-            return [ax.spines[direction] for ax in self.axs if ax.get_subplotspec().is_first_col()]
-
     @property
     def spines(self):
-        return self.get_spines()
-
+        if self._spines is None:
+            self._spines = dict(
+                top=[ax.spines["top"] for ax in self.axs if ax.get_subplotspec().is_first_row()],
+                right=[ax.spines["right"] for ax in self.axs if ax.get_subplotspec().is_last_col()],
+                bottom=[ax.spines["bottom"] for ax in self.axs if ax.get_subplotspec().is_last_row()],
+                left=[ax.spines["left"] for ax in self.axs if ax.get_subplotspec().is_first_col()],
+            )
+        return self._spines
 
 
 def brokenaxes(*args, **kwargs):
