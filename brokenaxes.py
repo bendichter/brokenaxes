@@ -125,10 +125,10 @@ class BrokenAxes:
                 ax.set_xlim(xlims[i % ncols])
                 ax.sharex(self.last_row[i % ncols])
         self.standardize_ticks()
+        self.diag_handles = []
         if d:
             self.draw_diags()
         self.set_spines()
-        self.diag_handles = []
 
     def _calculate_ratios(self, lims, scale):
         """
