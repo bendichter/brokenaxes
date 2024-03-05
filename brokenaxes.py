@@ -1,11 +1,12 @@
 from datetime import timedelta
-from typing import Optional
+from typing import Optional, Tuple, List
 
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import gridspec
 from matplotlib import rcParams
 from matplotlib import ticker
+from matplotlib.figure import Figure
 
 __author__ = "Ben Dichter"
 
@@ -13,18 +14,18 @@ __author__ = "Ben Dichter"
 class BrokenAxes:
     def __init__(
         self,
-        xlims=None,
-        ylims=None,
-        d=0.015,
-        tilt=45,
-        subplot_spec=None,
-        fig=None,
-        despine=True,
-        xscale=None,
-        yscale=None,
-        diag_color="k",
-        height_ratios=None,
-        width_ratios=None,
+        xlims: Optional[Tuple[Tuple[float, float], ...]] = None,
+        ylims: Optional[Tuple[Tuple[float, float], ...]] = None,
+        d: float = 0.015,
+        tilt: float = 45,
+        subplot_spec: Optional[gridspec.GridSpec] = None,
+        fig: Optional[Figure] = None,
+        despine: bool = True,
+        xscale: Optional[str] = None,
+        yscale: Optional[str] = None,
+        diag_color: str = "k",
+        height_ratios: Optional[List[int]] = None,
+        width_ratios: Optional[List[int]] = None,
         *args,
         **kwargs
     ):
@@ -68,11 +69,12 @@ class BrokenAxes:
         """
 
         self._spines = None
-        self.diag_color = diag_color
-        self.despine = despine
-        self.d = d
-        self.tilt = tilt
-        self.fig = fig if fig is not None else plt.gcf()
+        self.diag_color: str = diag_color
+        self.despine: bool = despine
+        self.d: float = d
+        self.tilt: float = tilt
+        self.fig: Figure = fig if fig is not None else plt.gcf()
+        self.diag_handles: List = []
 
         width_ratios = width_ratios if width_ratios is not None else self._calculate_ratios(xlims, xscale)
         height_ratios = height_ratios if height_ratios is not None else self._calculate_ratios(ylims, yscale)[::-1]
@@ -128,7 +130,6 @@ class BrokenAxes:
         if d:
             self.draw_diags()
         self.set_spines()
-        self.diag_handles = []
 
     def _calculate_ratios(self, lims, scale):
         """
