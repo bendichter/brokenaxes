@@ -203,6 +203,15 @@ def test_secondary_axes():
 
 
 @pytest.mark.mpl_image_compare
+def test_text():
+    fig = plt.figure(figsize=(5, 2))
+    bax = brokenaxes(xlims=((0, 0.1), (0.4, 0.7)), ylims=((-1, 0.7), (0.79, 1)))
+    bax.text(0.5, 0.5, "hello")
+
+    return fig
+
+
+@pytest.mark.mpl_image_compare
 def test_draw_diags():
     fig = plt.figure(figsize=(5, 2))
     bax = brokenaxes(
