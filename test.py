@@ -225,6 +225,32 @@ def test_set_spine_prop():
     return fig
 
 
+@pytest.mark.mpl_image_compare
+def test_fig_tight_layout():
+    fig = plt.figure()
+
+    subplot_specs = GridSpec(2, 2)
+
+    baxs = []
+
+    xlims = ((.1, .3),(.7, .8))
+    x = np.linspace(0, 1, 100)
+
+    for color, sps in zip(['red', 'green', 'blue', 'magenta'], subplot_specs):
+
+        bax = brokenaxes(xlims=xlims, subplot_spec=sps)
+        bax.plot(x, np.sin(x*30), color=color)
+        baxs.append(bax)
+
+    plt.tight_layout()
+    for bax in baxs:
+        for handle in bax.diag_handles:
+            handle.remove()
+        bax.draw_diags()
+
+    return fig
+
+
 def test_get_axis_special():
     fig = plt.figure(figsize=(5, 2))
     bax = brokenaxes(
