@@ -139,7 +139,7 @@ bax = brokenaxes(
 )
 bax.text(0.5, 0.5, "hello")
 ```
-
+![text_example](https://github.com/bendichter/brokenaxes/assets/844306/35d2026a-a9e6-49df-9bf5-199e9a43b447)
 
 ## How do I do more?
 You can customize brokenaxes outside of the supported features listed above. Brokenaxes works by creating a number of smaller axes objects, with the positions and sizes of those axes dictated by the data ranges used in the constructor. Those individual axes are stored as a list in `bax.axs`. Most customizations will require accessing those inner axes objects. (See the last two lines of [the datetime example](https://github.com/bendichter/brokenaxes#datetime)). There is also a larger invisible axes object, `bax.big_ax`, which spans the entire brokenaxes region and is used for things like x and y axis labels which span all of the smaller axes.
