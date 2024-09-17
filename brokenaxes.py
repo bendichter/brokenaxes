@@ -235,18 +235,12 @@ class BrokenAxes:
             subplotspec = ax.get_subplotspec()
             if not subplotspec.is_last_row():
                 ax.spines["bottom"].set_visible(False)
-                plt.setp(ax.xaxis.get_minorticklabels(), visible=False)
-                plt.setp(ax.xaxis.get_minorticklines(), visible=False)
-                plt.setp(ax.xaxis.get_majorticklabels(), visible=False)
-                plt.setp(ax.xaxis.get_majorticklines(), visible=False)
+                [child.set_visible(False) for child in ax.xaxis.get_children()]
             if self.despine or not subplotspec.is_first_row():
                 ax.spines["top"].set_visible(False)
             if not subplotspec.is_first_col():
                 ax.spines["left"].set_visible(False)
-                plt.setp(ax.yaxis.get_minorticklabels(), visible=False)
-                plt.setp(ax.yaxis.get_minorticklines(), visible=False)
-                plt.setp(ax.yaxis.get_majorticklabels(), visible=False)
-                plt.setp(ax.yaxis.get_majorticklines(), visible=False)
+                [child.set_visible(False) for child in ax.yaxis.get_children()]
             if self.despine or not subplotspec.is_last_col():
                 ax.spines["right"].set_visible(False)
 
