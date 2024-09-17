@@ -128,6 +128,18 @@ for ax in bax.axs:
 
 ![datetime_example](https://raw.githubusercontent.com/bendichter/brokenaxes/master/datetime_example.png)
 
+### text annotation
+```python
+import matplotlib.pyplot as plt
+from brokenaxes import brokenaxes
+
+fig = plt.figure(figsize=(5, 5))
+bax = brokenaxes(
+    xlims=((0, 0.1), (0.4, 0.7)), ylims=((-1, 0.7), (0.79, 1))
+)
+bax.text(0.5, 0.5, "hello")
+```
+![text_example](https://github.com/bendichter/brokenaxes/assets/844306/35d2026a-a9e6-49df-9bf5-199e9a43b447)
 
 ## How do I do more?
 You can customize brokenaxes outside of the supported features listed above. Brokenaxes works by creating a number of smaller axes objects, with the positions and sizes of those axes dictated by the data ranges used in the constructor. Those individual axes are stored as a list in `bax.axs`. Most customizations will require accessing those inner axes objects. (See the last two lines of [the datetime example](https://github.com/bendichter/brokenaxes#datetime)). There is also a larger invisible axes object, `bax.big_ax`, which spans the entire brokenaxes region and is used for things like x and y axis labels which span all of the smaller axes.
@@ -144,6 +156,6 @@ brokenaxes uses `pytest-mpl` to ensure that the plots are created correctly.
 
 To test that the plots are created correctly, run `pytest --mpl --mpl-baseline-path test_baseline test.py` from the root directory.
 
-To generate new test plots, run `pytest --mpl-generate-path tests_baseline test.py` from the root directory.
+To generate new test plots, run `pytest --mpl-generate-path test_baseline test.py` from the root directory.
 
 If you are running the tests on a headless server, you may need to set the MPLBACKEND environment variable to Agg.
