@@ -1,12 +1,12 @@
 from datetime import timedelta
 from typing import Optional, Tuple, List
 
-import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import gridspec
 from matplotlib import rcParams
 from matplotlib import ticker
 from matplotlib.figure import Figure
+from matplotlib.artist import setp
 
 __author__ = "Ben Dichter"
 
@@ -73,7 +73,12 @@ class BrokenAxes:
         self.despine: bool = despine
         self.d: float = d
         self.tilt: float = tilt
-        self.fig: Figure = fig if fig is not None else plt.gcf()
+
+        if fig is None:
+            import matplotlib.pyplot as plt
+            fig = plt.gcf()
+
+        self.fig: Figure = fig
         self.diag_handles: List = []
 
         width_ratios = width_ratios if width_ratios is not None else self._calculate_ratios(xlims, xscale)
@@ -91,10 +96,10 @@ class BrokenAxes:
             gs = gridspec.GridSpecFromSubplotSpec(
                 subplot_spec=subplot_spec, *args, **kwargs
             )
-            self.big_ax = plt.Subplot(self.fig, subplot_spec)
+            self.big_ax = fig.add_subplot(subplot_spec)
         else:
             gs = gridspec.GridSpec(*args, **kwargs)
-            self.big_ax = plt.Subplot(self.fig, gridspec.GridSpec(1, 1)[0])
+            self.big_ax = fig.add_subplot(gridspec.GridSpec(1, 1)[0])
 
         [sp.set_visible(False) for sp in self.big_ax.spines.values()]
         self.big_ax.set_xticks([])
@@ -103,8 +108,7 @@ class BrokenAxes:
 
         self.axs = []
         for igs in gs:
-            ax = plt.Subplot(self.fig, igs)
-            self.fig.add_subplot(ax)
+            ax = fig.add_subplot(igs)
             self.axs.append(ax)
         self.fig.add_subplot(self.big_ax)
 
@@ -235,18 +239,18 @@ class BrokenAxes:
             subplotspec = ax.get_subplotspec()
             if not subplotspec.is_last_row():
                 ax.spines["bottom"].set_visible(False)
-                plt.setp(ax.xaxis.get_minorticklabels(), visible=False)
-                plt.setp(ax.xaxis.get_minorticklines(), visible=False)
-                plt.setp(ax.xaxis.get_majorticklabels(), visible=False)
-                plt.setp(ax.xaxis.get_majorticklines(), visible=False)
+                setp(ax.xaxis.get_minorticklabels(), visible=False)
+                setp(ax.xaxis.get_minorticklines(), visible=False)
+                setp(ax.xaxis.get_majorticklabels(), visible=False)
+                setp(ax.xaxis.get_majorticklines(), visible=False)
             if self.despine or not subplotspec.is_first_row():
                 ax.spines["top"].set_visible(False)
             if not subplotspec.is_first_col():
                 ax.spines["left"].set_visible(False)
-                plt.setp(ax.yaxis.get_minorticklabels(), visible=False)
-                plt.setp(ax.yaxis.get_minorticklines(), visible=False)
-                plt.setp(ax.yaxis.get_majorticklabels(), visible=False)
-                plt.setp(ax.yaxis.get_majorticklines(), visible=False)
+                setp(ax.yaxis.get_minorticklabels(), visible=False)
+                setp(ax.yaxis.get_minorticklines(), visible=False)
+                setp(ax.yaxis.get_majorticklabels(), visible=False)
+                setp(ax.yaxis.get_majorticklines(), visible=False)
             if self.despine or not subplotspec.is_last_col():
                 ax.spines["right"].set_visible(False)
 
