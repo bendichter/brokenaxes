@@ -131,7 +131,8 @@ class BrokenAxes:
             self.draw_diags()
         self.set_spines()
 
-    def _calculate_ratios(self, lims, scale):
+    @staticmethod
+    def _calculate_ratios(lims, scale):
         """
         Calculate width or height ratios based on axis limits and scale.
 
@@ -229,29 +230,30 @@ class BrokenAxes:
 
     def set_spines(self):
         """Removes the spines of internal axes that are not boarder spines."""
+
+        # Helper function to hide axis elements
+        def hide_axis_elements(axis):
+            for element in (axis.get_majorticklines() + axis.get_minorticklines() +
+                            axis.get_majorticklabels() + axis.get_minorticklabels()):
+                element.set_visible(False)
+
         for ax in self.axs:
             ax.xaxis.tick_bottom()
             ax.yaxis.tick_left()
             subplotspec = ax.get_subplotspec()
             if not subplotspec.is_last_row():
                 ax.spines["bottom"].set_visible(False)
-                plt.setp(ax.xaxis.get_minorticklabels(), visible=False)
-                plt.setp(ax.xaxis.get_minorticklines(), visible=False)
-                plt.setp(ax.xaxis.get_majorticklabels(), visible=False)
-                plt.setp(ax.xaxis.get_majorticklines(), visible=False)
+                hide_axis_elements(ax.xaxis)
             if self.despine or not subplotspec.is_first_row():
                 ax.spines["top"].set_visible(False)
             if not subplotspec.is_first_col():
                 ax.spines["left"].set_visible(False)
-                plt.setp(ax.yaxis.get_minorticklabels(), visible=False)
-                plt.setp(ax.yaxis.get_minorticklines(), visible=False)
-                plt.setp(ax.yaxis.get_majorticklabels(), visible=False)
-                plt.setp(ax.yaxis.get_majorticklines(), visible=False)
+                hide_axis_elements(ax.yaxis)
             if self.despine or not subplotspec.is_last_col():
                 ax.spines["right"].set_visible(False)
 
     def standardize_ticks(self, xbase=None, ybase=None):
-        """Make all of the internal axes share tick bases
+        """Make all the internal axes share tick bases
 
         Parameters
         ----------

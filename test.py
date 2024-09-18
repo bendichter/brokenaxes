@@ -147,7 +147,7 @@ def test_text():
 
 @pytest.mark.mpl_image_compare
 def test_lims_arrays():
-    lims = np.arange(6).reshape((-1,2))
+    lims = np.arange(6).reshape((-1, 2))
     brokenaxes(xlims=lims, ylims=lims)
 
     return plt.gcf()
