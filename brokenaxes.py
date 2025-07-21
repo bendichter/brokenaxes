@@ -112,9 +112,9 @@ class BrokenAxes:
         self.last_row = []
         self.first_col = []
         for ax in self.axs:
-            if ax.get_subplotspec().is_last_row():
+            if self._is_last_row(ax):
                 self.last_row.append(ax)
-            if ax.get_subplotspec().is_first_col():
+            if self._is_first_col(ax):
                 self.first_col.append(ax)
 
         # Set common x/y lim for ax in the same col/row
@@ -130,6 +130,26 @@ class BrokenAxes:
         if d:
             self.draw_diags()
         self.set_spines()
+
+    def _is_first_row(self, ax):
+        """Safely check if axis is in the first row."""
+        subplotspec = ax.get_subplotspec()
+        return subplotspec is not None and subplotspec.is_first_row()
+
+    def _is_last_row(self, ax):
+        """Safely check if axis is in the last row."""
+        subplotspec = ax.get_subplotspec()
+        return subplotspec is not None and subplotspec.is_last_row()
+
+    def _is_first_col(self, ax):
+        """Safely check if axis is in the first column."""
+        subplotspec = ax.get_subplotspec()
+        return subplotspec is not None and subplotspec.is_first_col()
+
+    def _is_last_col(self, ax):
+        """Safely check if axis is in the last column."""
+        subplotspec = ax.get_subplotspec()
+        return subplotspec is not None and subplotspec.is_last_col()
 
     @staticmethod
     def _calculate_ratios(lims, scale):
@@ -190,40 +210,40 @@ class BrokenAxes:
         for ax in self.axs:
             bounds = ax.get_position().bounds
 
-            if ax.get_subplotspec().is_last_row():
+            if self._is_last_row(ax):
                 ypos = bounds[1]
-                if not ax.get_subplotspec().is_last_col():
+                if not self._is_last_col(ax):
                     xpos = bounds[0] + bounds[2]
                     ds += self.draw_diag(ax, xpos, ypos, **d_kwargs)
-                if not ax.get_subplotspec().is_first_col():
+                if not self._is_first_col(ax):
                     xpos = bounds[0]
                     ds += self.draw_diag(ax, xpos, ypos, **d_kwargs)
 
-            if ax.get_subplotspec().is_first_col():
+            if self._is_first_col(ax):
                 xpos = bounds[0]
-                if not ax.get_subplotspec().is_first_row():
+                if not self._is_first_row(ax):
                     ypos = bounds[1] + bounds[3]
                     ds += self.draw_diag(ax, xpos, ypos, **d_kwargs)
-                if not ax.get_subplotspec().is_last_row():
+                if not self._is_last_row(ax):
                     ypos = bounds[1]
                     ds += self.draw_diag(ax, xpos, ypos, **d_kwargs)
 
             if not self.despine:
-                if ax.get_subplotspec().is_first_row():
+                if self._is_first_row(ax):
                     ypos = bounds[1] + bounds[3]
-                    if not ax.get_subplotspec().is_last_col():
+                    if not self._is_last_col(ax):
                         xpos = bounds[0] + bounds[2]
                         ds += self.draw_diag(ax, xpos, ypos, **d_kwargs)
-                    if not ax.get_subplotspec().is_first_col():
+                    if not self._is_first_col(ax):
                         xpos = bounds[0]
                         ds += self.draw_diag(ax, xpos, ypos, **d_kwargs)
 
-                if ax.get_subplotspec().is_last_col():
+                if self._is_last_col(ax):
                     xpos = bounds[0] + bounds[2]
-                    if not ax.get_subplotspec().is_first_row():
+                    if not self._is_first_row(ax):
                         ypos = bounds[1] + bounds[3]
                         ds += self.draw_diag(ax, xpos, ypos, **d_kwargs)
-                    if not ax.get_subplotspec().is_last_row():
+                    if not self._is_last_row(ax):
                         ypos = bounds[1]
                         ds += self.draw_diag(ax, xpos, ypos, **d_kwargs)
         self.diag_handles = ds
@@ -241,6 +261,9 @@ class BrokenAxes:
             ax.xaxis.tick_bottom()
             ax.yaxis.tick_left()
             subplotspec = ax.get_subplotspec()
+            if subplotspec is None:
+                continue  # Skip axes without subplotspec
+                
             if not subplotspec.is_last_row():
                 ax.spines["bottom"].set_visible(False)
                 hide_axis_elements(ax.xaxis)
@@ -267,35 +290,35 @@ class BrokenAxes:
                 xbase = max(
                     ax.xaxis.get_ticklocs()[1] / ax.xaxis.get_ticklocs()[0]
                     for ax in self.axs
-                    if ax.get_subplotspec().is_last_row()
+                    if self._is_last_row(ax)
                 )
             else:
                 xbase = max(
                     ax.xaxis.get_ticklocs()[1] - ax.xaxis.get_ticklocs()[0]
                     for ax in self.axs
-                    if ax.get_subplotspec().is_last_row()
+                    if self._is_last_row(ax)
                 )
         if ybase is None:
             if self.axs[0].yaxis.get_scale() == "log":
                 ybase = max(
                     ax.yaxis.get_ticklocs()[1] / ax.yaxis.get_ticklocs()[0]
                     for ax in self.axs
-                    if ax.get_subplotspec().is_first_col()
+                    if self._is_first_col(ax)
                 )
             else:
                 ybase = max(
                     ax.yaxis.get_ticklocs()[1] - ax.yaxis.get_ticklocs()[0]
                     for ax in self.axs
-                    if ax.get_subplotspec().is_first_col()
+                    if self._is_first_col(ax)
                 )
 
         for ax in self.axs:
-            if ax.get_subplotspec().is_first_col():
+            if self._is_first_col(ax):
                 if ax.yaxis.get_scale() == "log":
                     ax.yaxis.set_major_locator(ticker.LogLocator(ybase))
                 else:
                     ax.yaxis.set_major_locator(ticker.MultipleLocator(ybase))
-            if ax.get_subplotspec().is_last_row():
+            if self._is_last_row(ax):
                 if ax.xaxis.get_scale() == "log":
                     ax.xaxis.set_major_locator(ticker.LogLocator(xbase))
                 else:
@@ -375,13 +398,13 @@ class BrokenAxes:
             [
                 ax.secondary_yaxis("right", functions=functions)
                 for ax in self.axs
-                if ax.get_subplotspec().is_last_col()
+                if self._is_last_col(ax)
             ]
         else:
             [
                 ax.secondary_yaxis("left", functions=functions)
                 for ax in self.axs
-                if ax.get_subplotspec().is_first_col()
+                if self._is_first_col(ax)
             ]
         secax = self.big_ax.secondary_yaxis(location, functions=functions)
 
@@ -400,13 +423,13 @@ class BrokenAxes:
             [
                 ax.secondary_xaxis("top", functions=functions)
                 for ax in self.axs
-                if ax.get_subplotspec().is_first_row()
+                if self._is_first_row(ax)
             ]
         else:
             [
                 ax.secondary_xaxis("bottom", functions=functions)
                 for ax in self.axs
-                if ax.get_subplotspec().is_last_row()
+                if self._is_last_row(ax)
             ]
         secax = self.big_ax.secondary_xaxis(location, functions=functions)
 
@@ -433,10 +456,10 @@ class BrokenAxes:
     def spines(self):
         if self._spines is None:
             self._spines = dict(
-                top=[ax.spines["top"] for ax in self.axs if ax.get_subplotspec().is_first_row()],
-                right=[ax.spines["right"] for ax in self.axs if ax.get_subplotspec().is_last_col()],
-                bottom=[ax.spines["bottom"] for ax in self.axs if ax.get_subplotspec().is_last_row()],
-                left=[ax.spines["left"] for ax in self.axs if ax.get_subplotspec().is_first_col()],
+                top=[ax.spines["top"] for ax in self.axs if self._is_first_row(ax)],
+                right=[ax.spines["right"] for ax in self.axs if self._is_last_col(ax)],
+                bottom=[ax.spines["bottom"] for ax in self.axs if self._is_last_row(ax)],
+                left=[ax.spines["left"] for ax in self.axs if self._is_first_col(ax)],
             )
         return self._spines
 
