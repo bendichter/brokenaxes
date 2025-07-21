@@ -286,32 +286,27 @@ class BrokenAxes:
             for that axis.
         """
         if xbase is None:
-            if self.axs[0].xaxis.get_scale() == "log":
-                xbase = max(
-                    ax.xaxis.get_ticklocs()[1] / ax.xaxis.get_ticklocs()[0]
-                    for ax in self.axs
-                    if self._is_last_row(ax)
-                )
-            else:
-                xbase = max(
-                    ax.xaxis.get_ticklocs()[1] - ax.xaxis.get_ticklocs()[0]
-                    for ax in self.axs
-                    if self._is_last_row(ax)
-                )
+            bases = []
+            for ax in self.axs:
+                if ax.get_subplotspec().is_last_row():
+                    ticks = ax.xaxis.get_ticklocs()
+                    if len(ticks) > 1:
+                        if self.axs[0].xaxis.get_scale() == "log":
+                            bases.append(ticks[1] / ticks[0])
+                        else:
+                            bases.append(ticks[1] - ticks[0])
+            xbase = max(bases) if bases else 1
         if ybase is None:
-            if self.axs[0].yaxis.get_scale() == "log":
-                ybase = max(
-                    ax.yaxis.get_ticklocs()[1] / ax.yaxis.get_ticklocs()[0]
-                    for ax in self.axs
-                    if self._is_first_col(ax)
-                )
-            else:
-                ybase = max(
-                    ax.yaxis.get_ticklocs()[1] - ax.yaxis.get_ticklocs()[0]
-                    for ax in self.axs
-                    if self._is_first_col(ax)
-                )
-
+            bases = []
+            for ax in self.axs:
+                if ax.get_subplotspec().is_first_col():
+                    ticks = ax.yaxis.get_ticklocs()
+                    if len(ticks) > 1:
+                        if self.axs[0].yaxis.get_scale() == "log":
+                            bases.append(ticks[1] / ticks[0])
+                        else:
+                            bases.append(ticks[1] - ticks[0])
+            ybase = max(bases) if bases else 1
         for ax in self.axs:
             if self._is_first_col(ax):
                 if ax.yaxis.get_scale() == "log":
