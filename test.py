@@ -316,3 +316,35 @@ def test_single_tick_handling():
     # This should not raise IndexError for log scale either
     bax.standardize_ticks()
     plt.close(fig)
+
+
+def test_matplotlib_compatibility_issue_125():
+    """Test for matplotlib compatibility with deprecated is_last_row/is_first_col methods.
+    
+    This addresses issue #125 where matplotlib deprecated direct access to is_last_row()
+    and is_first_col() methods on Axes objects in version 3.4+.
+    """
+    # Test exact code from the issue
+    sps1, sps2 = GridSpec(2, 1)
+
+    # This should not raise AttributeError: 'Axes' object has no attribute 'is_last_row'
+    bax = brokenaxes(xlims=((.1, .3), (.7, .8)), subplot_spec=sps1)
+    x = np.linspace(0, 1, 100)
+    bax.plot(x, np.sin(x*30), ls=':', color='m')
+
+    x = np.random.poisson(3, 1000)
+    bax = brokenaxes(xlims=((0, 2.5), (3, 6)), subplot_spec=sps2)
+    bax.hist(x, histtype='bar')
+    
+    plt.close('all')
+    
+    # Test that helper methods work correctly
+    bax = brokenaxes(xlims=((0, 1), (2, 3)))
+    for ax in bax.axs:
+        # These should all return boolean values without errors
+        assert isinstance(bax._is_last_row(ax), bool)
+        assert isinstance(bax._is_first_col(ax), bool) 
+        assert isinstance(bax._is_first_row(ax), bool)
+        assert isinstance(bax._is_last_col(ax), bool)
+    
+    plt.close('all')
