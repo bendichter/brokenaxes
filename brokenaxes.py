@@ -287,30 +287,54 @@ class BrokenAxes:
         """
         if xbase is None:
             if self.axs[0].xaxis.get_scale() == "log":
-                xbase = max(
-                    ax.xaxis.get_ticklocs()[1] / ax.xaxis.get_ticklocs()[0]
-                    for ax in self.axs
-                    if self._is_last_row(ax)
-                )
+                # Calculate log scale base, handling single tick case
+                bases = []
+                for ax in self.axs:
+                    if self._is_last_row(ax):
+                        ticklocs = ax.xaxis.get_ticklocs()
+                        if len(ticklocs) >= 2:
+                            bases.append(ticklocs[1] / ticklocs[0])
+                        else:
+                            bases.append(10)  # Default log base fallback
+                xbase = max(bases) if bases else 10
             else:
-                xbase = max(
-                    ax.xaxis.get_ticklocs()[1] - ax.xaxis.get_ticklocs()[0]
-                    for ax in self.axs
-                    if self._is_last_row(ax)
-                )
+                # Calculate linear scale base, handling single tick case
+                bases = []
+                for ax in self.axs:
+                    if self._is_last_row(ax):
+                        ticklocs = ax.xaxis.get_ticklocs()
+                        if len(ticklocs) >= 2:
+                            bases.append(ticklocs[1] - ticklocs[0])
+                        else:
+                            # Use axis range divided by reasonable number of ticks as fallback
+                            xlim = ax.get_xlim()
+                            bases.append((xlim[1] - xlim[0]) / 5)
+                xbase = max(bases) if bases else 1
         if ybase is None:
             if self.axs[0].yaxis.get_scale() == "log":
-                ybase = max(
-                    ax.yaxis.get_ticklocs()[1] / ax.yaxis.get_ticklocs()[0]
-                    for ax in self.axs
-                    if self._is_first_col(ax)
-                )
+                # Calculate log scale base, handling single tick case
+                bases = []
+                for ax in self.axs:
+                    if self._is_first_col(ax):
+                        ticklocs = ax.yaxis.get_ticklocs()
+                        if len(ticklocs) >= 2:
+                            bases.append(ticklocs[1] / ticklocs[0])
+                        else:
+                            bases.append(10)  # Default log base fallback
+                ybase = max(bases) if bases else 10
             else:
-                ybase = max(
-                    ax.yaxis.get_ticklocs()[1] - ax.yaxis.get_ticklocs()[0]
-                    for ax in self.axs
-                    if self._is_first_col(ax)
-                )
+                # Calculate linear scale base, handling single tick case
+                bases = []
+                for ax in self.axs:
+                    if self._is_first_col(ax):
+                        ticklocs = ax.yaxis.get_ticklocs()
+                        if len(ticklocs) >= 2:
+                            bases.append(ticklocs[1] - ticklocs[0])
+                        else:
+                            # Use axis range divided by reasonable number of ticks as fallback
+                            ylim = ax.get_ylim()
+                            bases.append((ylim[1] - ylim[0]) / 5)
+                ybase = max(bases) if bases else 1
 
         for ax in self.axs:
             if self._is_first_col(ax):
