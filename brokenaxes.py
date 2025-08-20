@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 from typing import Optional, Tuple, List
 
 import matplotlib.pyplot as plt
@@ -7,6 +7,7 @@ from matplotlib import gridspec
 from matplotlib import rcParams
 from matplotlib import ticker
 from matplotlib.figure import Figure
+import matplotlib.dates as dates
 
 __author__ = "Ben Dichter"
 
@@ -447,6 +448,12 @@ class BrokenAxes:
         for ax in self.axs:
             xlim = ax.get_xlim()
             ylim = ax.get_ylim()
+
+            if isinstance(x, datetime):
+                x = dates.date2num(x)
+            if isinstance(y, datetime):
+                y = dates.date2num(y)
+
             if xlim[0] < x < xlim[1] and ylim[0] < y < ylim[1]:
                 return ax.text(x, y, s, *args, **kwargs)
 
