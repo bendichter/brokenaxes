@@ -279,6 +279,45 @@ def test_text_error():
         bax.text(-11, -11, "hello")
 
 
+def test_single_tick_handling():
+    """Test that brokenaxes handles axes with only a single tick without raising IndexError.
+    
+    This addresses the issue where standardize_ticks() would fail with IndexError
+    when an axis has only one tick location, due to trying to access get_ticklocs()[1]
+    when the array has only one element.
+    """
+    # Test case 1: Force single tick on both axes
+    fig = plt.figure(figsize=(5, 3))
+    bax = brokenaxes(xlims=((0, 1),), ylims=((0, 1),))
+    
+    # Manually set single ticks to trigger the issue
+    for ax in bax.axs:
+        ax.set_xticks([0.5])
+        ax.set_yticks([0.5])
+    
+    # This should not raise IndexError
+    bax.standardize_ticks()
+    plt.close(fig)
+    
+    # Test case 2: Very small range that might result in single tick
+    fig = plt.figure(figsize=(5, 3))
+    bax = brokenaxes(xlims=((0, 1e-10),), ylims=((0, 1e-10),))
+    bax.plot([0], [0], 'o')
+    plt.close(fig)
+    
+    # Test case 3: Log scale with single tick
+    fig = plt.figure(figsize=(5, 3))
+    bax = brokenaxes(xlims=((1, 10),), ylims=((1, 10),), xscale='log', yscale='log')
+    
+    for ax in bax.axs:
+        ax.set_xticks([5])
+        ax.set_yticks([5])
+    
+    # This should not raise IndexError for log scale either
+    bax.standardize_ticks()
+    plt.close(fig)
+
+
 def test_matplotlib_compatibility_issue_125():
     """Test for matplotlib compatibility with deprecated is_last_row/is_first_col methods.
     
