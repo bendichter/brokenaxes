@@ -1,2 +1,2 @@
-include LICENCE README.md
+include LICENSE README.md
 recursive-include examples *.py
