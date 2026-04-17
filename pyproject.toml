@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "brokenaxes"
+version = "0.6.3"
+description = "Create broken axes"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Ben Dichter", email = "ben.dichter@gmail.com" },
+]
+keywords = ["data visualization"]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+    "Framework :: Matplotlib",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "matplotlib>=3.7",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=6.0", "pytest-cov", "pytest-mpl"]
+
+[project.urls]
+Homepage = "https://github.com/bendichter/brokenaxes"
+
+[tool.setuptools]
+py-modules = ["brokenaxes"]
